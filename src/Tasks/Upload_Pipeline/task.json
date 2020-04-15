@@ -1,0 +1,31 @@
+{
+    "$schema": "https://raw.githubusercontent.com/Microsoft/azure-pipelines-task-lib/master/tasks.schema.json",
+    "id": "c351c0a5-577d-4777-806f-b4c50e6dc31b",
+    "name": "UploadPipeline",
+    "friendlyName": "Upload pipeline to Kubeflow workspace",
+    "description": "Upload pipeline to the Kubeflow workspace for use with machine learning",
+    "helpMarkDown": "",
+    "category": "Utility",
+    "author": "v-ryzube",
+    "version": {
+        "Major": 0,
+        "Minor": 1,
+        "Patch": 0
+    },
+    "instanceNameFormat": "Upload pipeline to Kubeflow",
+    "inputs": [
+        {
+            "name": "pipelineFile",
+            "type": "string",
+            "label": "Pipeline file",
+            "defaultValue": "",
+            "required": true,
+            "helpMarkDown": "Name of the pipeline file to be uploaded"
+        }
+    ],
+    "execution": {
+        "Node10": {
+            "target": "index.js"
+        }
+    }
+}

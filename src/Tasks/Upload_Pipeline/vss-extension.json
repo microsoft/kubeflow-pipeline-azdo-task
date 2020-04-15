@@ -1,0 +1,36 @@
+{
+    "manifestVersion": 1.0,
+    "id": "UploadPipeline",
+    "name": "Kubeflow Pipeline Uploader",
+    "version": "0.1.0",
+    "publisher": "v-ryzube",
+    "description": "Simplifies uploading a pipeline to the Kubeflow workspace",
+    "targets": [
+        {
+            "id": "Microsoft.VisualStudio.Services"
+        }
+    ],    
+    "categories": [
+        "Azure Pipelines"
+    ],
+    "icons": {
+        "default": "images/extension-icon.png"        
+    },
+    "files": [
+        {
+            "path": "Upload_Pipeline"
+        }
+    ],
+    "contributions": [
+        {
+            "id": "UploadPipeline",
+            "type": "ms.vss-distributed-task.task",
+            "targets": [
+                "ms.vss-distributed-task.tasks"
+            ],
+            "properties": {
+                "name": "UploadPipeline"
+            }
+        }
+    ]
+}

@@ -1,0 +1,22 @@
+{
+  "name": "upload_pipeline",
+  "version": "1.0.0",
+  "description": "Task for uploading pipelines to the Kubeflow workspace",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://dev.azure.com/csedevops/Kubeflow%20Integration/_git/kubeflow_azdo_task"
+  },
+  "author": "CSEDevOps",
+  "license": "ISC",
+  "dependencies": {
+    "azure-pipelines-task-lib": "^2.9.3"
+  },
+  "devDependencies": {
+    "@types/node": "^13.11.1",
+    "@types/q": "^1.5.2"
+  }
+}
