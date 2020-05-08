@@ -1,0 +1,36 @@
+{
+    "manifestVersion": 1.0,
+    "id": "CreateExperimentRun",
+    "name": "Create Kubeflow Experiment and Run",
+    "version": "0.0.0",
+    "publisher": "v-ryzube",
+    "description": "Create a new Experiment and new Run with Kubeflow",
+    "targets": [
+        {
+            "id": "Microsoft.VisualStudio.Services"
+        }
+    ],    
+    "categories": [
+        "Azure Pipelines"
+    ],
+    "icons": {
+        "default": "images/uploadIcon.png"        
+    },
+    "files": [
+        {
+            "path": "src/Tasks/Create_Run_Experiments"
+        }
+    ],
+    "contributions": [
+        {
+            "id": "CreateExperimentRun",
+            "type": "ms.vss-distributed-task.task",
+            "targets": [
+                "ms.vss-distributed-task.tasks"
+            ],
+            "properties": {
+                "name": "src/Tasks/Create_Run_Experiments"
+            }
+        }
+      ]
+}

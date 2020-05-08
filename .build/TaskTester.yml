@@ -1,0 +1,15 @@
+# Pipeline for testing the tasks created within this project
+
+trigger: none
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+- task: UploadKubeflowPipeline@0
+  inputs:
+    kubeflowEndpoint: 'http://52.149.247.172/'
+    kubeflowPipelineTask: 'uploadNewVersion'
+    pipelineFilePath: '$(System.DefaultWorkingDirectory)/src/Tasks/Upload_Pipeline/Tests/pipeline.py.tar.gz'
+    existingPipelineName: 'testPipeline'
+    versionName: 'finalization'

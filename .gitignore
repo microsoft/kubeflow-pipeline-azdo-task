@@ -68,3 +68,7 @@ package-lock.json
 
 # Local Task Key
 .taskkey
+
+# js files compiled from ts files
+*.js
+.js

@@ -1,20 +1,10 @@
-# Introduction 
-TODO: Give a short introduction of your project. Let this section explain the objectives or the motivation behind this project. 
+# Kubeflow Pipeline Uploader
 
-# Getting Started
-TODO: Guide users through getting your code up and running on their own system. In this section you can talk about:
-1.	Installation process
-2.	Software dependencies
-3.	Latest releases
-4.	API references
+<p>This task will allow you to upload an ML pipeline to your Kubeflow workspace. The task utilizes the Kubeflow API to validate user input and upload new pipelines to Kubeflow.</p>
 
-# Build and Test
-TODO: Describe and show how to build your code and run the tests. 
-
-# Contribute
-TODO: Explain how other users and developers can contribute to make your code better. 
-
-If you want to learn more about creating good readme files then refer the following [guidelines](https://docs.microsoft.com/en-us/azure/devops/repos/git/create-a-readme?view=azure-devops). You can also seek inspiration from the below readme files:
-- [ASP.NET Core](https://github.com/aspnet/Home)
-- [Visual Studio Code](https://github.com/Microsoft/vscode)
-- [Chakra Core](https://github.com/Microsoft/ChakraCore)
+# Fields
+- **Kubeflow Endpoint:** This is the base url of your Kubeflow workspace in *http://your_URL_here/* format.
+- **Bearer Token:** The bearer token is used only if you have bearer authentication on your Kubeflow workspace. If you do not include this field, and have bearer authentication, then this task will not be able to access your workspace.
+- **Kubeflow Pipeline Task:** This field allows you to choose which task you would like to perform. Currently the only option is to upload a new Kubeflow pipeline.
+- **Pipeline Path:** This is the path that your .tar.gz pipeline file is located in your repository. The maximum file size is 32MB.
+- **Pipeline Name:** This is the name that you would like to give the new pipeline.

@@ -1,10 +1,10 @@
 {
   "name": "upload_pipeline",
   "version": "1.0.0",
-  "description": "Task for uploading pipelines to the Kubeflow workspace",
+  "description": "Task for uploading a pipeline to the Kubeflow workspace",
   "main": "index.js",
   "scripts": {
-    "test": "test"
+    "test": "mocha ./Tests/UploadPipelineTests.js"
   },
   "repository": {
     "type": "git",
@@ -13,10 +13,17 @@
   "author": "CSEDevOps",
   "license": "ISC",
   "dependencies": {
-    "azure-pipelines-task-lib": "^2.9.3"
+    "@types/request": "^2.48.4",
+    "azure-pipelines-task-lib": "^2.9.3",
+    "form-data": "^3.0.0",
+    "mocha": "^7.1.2",
+    "request": "^2.88.2",
+    "typed-rest-client": "^1.7.3"
   },
   "devDependencies": {
-    "@types/node": "^13.11.1",
-    "@types/q": "^1.5.2"
+    "@types/mocha": "^7.0.2",
+    "@types/node": "^13.13.4",
+    "@types/q": "^1.5.2",
+    "sync-request": "^6.1.0"
   }
 }

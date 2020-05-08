@@ -1,26 +1,97 @@
 {
-    "$schema": "https://raw.githubusercontent.com/Microsoft/azure-pipelines-task-lib/master/tasks.schema.json",
     "id": "c351c0a5-577d-4777-806f-b4c50e6dc31b",
-    "name": "UploadPipeline",
-    "friendlyName": "Upload pipeline to Kubeflow workspace",
+    "name": "UploadKubeflowPipeline",
+    "friendlyName": "Kubeflow Upload Pipeline",
     "description": "Upload pipeline to the Kubeflow workspace for use with machine learning",
     "helpMarkDown": "",
     "category": "Utility",
-    "author": "v-ryzube",
+    "author": "CSE-DevOps",
     "version": {
         "Major": 0,
         "Minor": 1,
-        "Patch": 0
+        "Patch": 2
     },
     "instanceNameFormat": "Upload pipeline to Kubeflow",
+    "groups": [
+        {
+          "name": "UploadNew",
+          "displayName": "Upload New Pipeline",
+          "isExpanded": true,
+          "visibleRule": ""
+        },
+        {
+          "name": "UploadNewVersion",
+          "displayName": "Upload New Pipeline Version",
+          "isExpanded": true,
+          "visibleRule": ""
+        }
+      ],
     "inputs": [
         {
-            "name": "pipelineFile",
+            "name": "kubeflowEndpoint",
             "type": "string",
-            "label": "Pipeline file",
+            "label": "Kubeflow Endpoint",
             "defaultValue": "",
             "required": true,
-            "helpMarkDown": "Name of the pipeline file to be uploaded"
+            "helpMarkDown": "Input the URL of the Kubeflow workspace you are trying to upload to. Make sure you put in the url for the homepage in the following format: http://yourURL/",
+            "properties": {
+                "EditableOptions": "True"
+            }
+        },
+        {
+            "name": "bearerToken",
+            "type": "string",
+            "label": "Bearer Token",
+            "defaultValue": "",
+            "required": false,
+            "helpMarkDown": "DO NOT INPUT THE RAW TOKEN HERE! If your API connection requires a bearer token, create a secret pipeline variable and input the variable like this: $(secretVar). For help creating secret variables visit https://docs.microsoft.com/en-us/azure/devops/pipelines/process/variables?view=azure-devops&tabs=yaml%2Cbatch#secret-variables"
+        },
+        {
+            "name": "kubeflowPipelineTask",
+            "type": "pickList",
+            "label": "Kubeflow Pipeline Task",
+            "defaultValue": "",
+            "required": true,
+            "helpMarkDown": "Choose the operation to perform.",
+            "options": {
+                "uploadNew": "Upload New Pipeline",
+                "uploadNewVersion": "Upload New Pipeline Version"
+            }
+        },
+        {
+            "name": "pipelineFilePath",
+            "type": "string",
+            "label": "Pipeline Path",
+            "defaultValue": "",
+            "required": true,
+            "helpMarkDown": "File path of the pipeline file to be uploaded. Must be a compressed .tar.gz file."
+        },
+        {
+            "name": "newPipelineName",
+            "type": "string",
+            "label": "Pipeline Name",
+            "defaultValue": "name",
+            "required": true,
+            "helpMarkDown": "The name you would like to give your pipeline.",
+            "visibleRule": "kubeflowPipelineTask = uploadNew"
+        },
+        {
+            "name": "existingPipelineName",
+            "type": "string",
+            "label": "Pipeline Name",
+            "defaultValue": "name",
+            "required": true,
+            "helpMarkDown": "Choose an existing pipeline to make a new version of.",
+            "visibleRule": "kubeflowPipelineTask = uploadNewVersion"
+        },
+        {
+            "name": "versionName",
+            "type": "string",
+            "label": "Version Name",
+            "defaultValue": "version",
+            "required": true,
+            "helpMarkDown": "The name of your new version of the pipeline.",
+            "visibleRule": "kubeflowPipelineTask = uploadNewVersion"
         }
     ],
     "execution": {

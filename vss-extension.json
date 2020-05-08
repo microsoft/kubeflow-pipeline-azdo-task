@@ -1,9 +1,9 @@
 {
     "manifestVersion": 1.0,
-    "id": "UploadPipeline",
-    "name": "Kubeflow Pipeline Uploader",
-    "version": "0.1.0",
-    "publisher": "v-ryzube",
+    "id": "UploadKubeflowPipeline",
+    "name": "Kubeflow Upload Pipeline",
+    "version": "0.1.2",
+    "publisher": "CSE-DevOps",
     "description": "Simplifies uploading a pipeline to the Kubeflow workspace",
     "targets": [
         {
@@ -14,23 +14,23 @@
         "Azure Pipelines"
     ],
     "icons": {
-        "default": "images/extension-icon.png"        
+        "default": "images/uploadIcon.png"        
     },
     "files": [
         {
-            "path": "Upload_Pipeline"
+            "path": "src/Tasks/Upload_Pipeline"
         }
     ],
     "contributions": [
         {
-            "id": "UploadPipeline",
+            "id": "UploadKubeflowPipeline",
             "type": "ms.vss-distributed-task.task",
             "targets": [
                 "ms.vss-distributed-task.tasks"
             ],
             "properties": {
-                "name": "UploadPipeline"
+                "name": "src/Tasks/Upload_Pipeline"
             }
         }
-    ]
+      ]
 }
