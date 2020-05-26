@@ -1,0 +1,185 @@
+#Pipeline for building and publishing the Kubeflow tasks
+
+trigger: none
+# - master
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  productionPublisher: 'CSE-DevOps'
+  uploadExtensionId: 'UploadKubeflowPipeline'
+  runExtensionId: 'CreateExperimentRun'
+  visibility: 'private'
+
+stages:
+  - stage:
+    displayName: Code Quality
+    jobs:
+    - job:
+      steps:
+      - task: TfxInstaller@2
+        inputs:
+          version: 'v0.6.x'
+      - task: Npm@1
+        displayName: 'Installing Dependencies required by Kubeflow Upload Task'
+        inputs:
+          command: 'install'
+          workingDir: 'src/Tasks/Upload_Pipeline'
+      - task: Npm@1
+        displayName: 'Installing Dependencies required by Kubeflow Run Task'
+        inputs:
+          command: 'install'
+          workingDir: 'src/Tasks/Create_Run_Experiments'
+      - task: Bash@3
+        displayName: Compile Javascript
+        inputs:
+          targetType: 'inline'
+          script: |
+            cd src/Tasks/Upload_Pipeline
+            tsc
+            cd ..
+            cd Create_Run_Experiments
+            tsc
+      - task: Npm@1
+        displayName: Running Kubeflow Upload Unit Tests
+        inputs:
+          command: 'custom'
+          workingDir: 'src/Tasks/Upload_Pipeline'
+          customCommand: 'test'
+      - task: Npm@1
+        displayName: Running Kubeflow Run Unit Tests
+        inputs:
+          command: 'custom'
+          workingDir: 'src/Tasks/Create_Run_Experiments'
+          customCommand: 'test'
+      - task: PublishTestResults@2
+        displayName: "Publish unit test result"
+        inputs:
+          testResultsFormat: 'JUnit'
+          testResultsFiles: |
+            **/UploadTestResults.xml
+            **/RunTestResults.xml
+          mergeTestResults: true
+
+  - stage: Build_Manifest_Files
+    displayName: Build Manifest Files
+    jobs:
+      - job:
+        steps:
+        - task: TfxInstaller@2
+          inputs:
+            version: 'v0.6.x'
+        - task: Npm@1
+          displayName: 'Installing Dependencies required by Kubeflow Upload Task'
+          inputs:
+            command: 'install'
+            workingDir: 'src/Tasks/Upload_Pipeline'
+        - task: Npm@1
+          displayName: 'Installing Dependencies required by Kubeflow Run Task'
+          inputs:
+            command: 'install'
+            workingDir: 'src/Tasks/Create_Run_Experiments'
+        - task: Bash@3
+          displayName: Compile Javascript
+          inputs:
+            targetType: 'inline'
+            script: |
+              cd src/Tasks/Upload_Pipeline
+              tsc
+              cd ..
+              cd Create_Run_Experiments
+              tsc
+        - task: QueryAzureDevOpsExtensionVersion@2
+          displayName: CSE-DevOps Get Existing Kubeflow Run Patch Number
+          inputs:
+            connectTo: 'VsTeam'
+            connectedServiceName: 'KubeflowExtensionBuildAndPublish'
+            publisherId: '$(productionPublisher)'
+            extensionId: '$(runExtensionId)'
+            versionAction: 'Patch'
+            outputVariable: 'Run.Extension.Version'
+        - task: PackageAzureDevOpsExtension@2
+          displayName: CSE-DevOps Package Kubeflow Run Extension
+          inputs:
+            rootFolder: '$(System.DefaultWorkingDirectory)'
+            patternManifest: 'vss-extension-Run.json'
+            publisherId: '$(productionPublisher)'
+            extensionId: '$(runExtensionId)'
+            extensionName: 'Kubeflow Experiment and Run'
+            extensionVersion: '$(Run.Extension.Version)'
+            updateTasksVersion: true
+            updateTasksVersionType: 'patch'
+            extensionVisibility: 'private'
+            extensionPricing: 'free'
+        - task: QueryAzureDevOpsExtensionVersion@2
+          displayName: CSE-DevOps Get Existing Kubeflow Upload Patch Number
+          inputs:
+            connectTo: 'VsTeam'
+            connectedServiceName: 'KubeflowExtensionBuildAndPublish'
+            publisherId: '$(productionPublisher)'
+            extensionId: '$(uploadExtensionId)'
+            versionAction: 'Patch'
+            outputVariable: 'Upload.Extension.Version'
+        - task: PackageAzureDevOpsExtension@2
+          displayName: CSE-DevOps Package Kubeflow Upload Extension
+          inputs:
+            rootFolder: '$(System.DefaultWorkingDirectory)'
+            patternManifest: 'vss-extension-Upload.json'
+            publisherId: '$(productionPublisher)'
+            extensionId: '$(uploadExtensionId)'
+            extensionName: 'Kubeflow Upload Pipeline'
+            extensionVersion: '$(Upload.Extension.Version)'
+            updateTasksVersion: true
+            updateTasksVersionType: 'patch'
+            extensionVisibility: 'private'
+            extensionPricing: 'free'
+        - task: CopyFiles@2
+          displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)'
+          inputs:
+            Contents: '**/*.vsix'
+            TargetFolder: '$(Build.ArtifactStagingDirectory)'
+        - task: PublishBuildArtifacts@1
+          inputs:
+            PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+            ArtifactName: 'ExtensionFiles'
+            publishLocation: 'Container'
+
+  - stage: Publish_Extensions
+    displayName: Publish Extensions
+    jobs:
+      - job:
+        steps:
+        - task: TfxInstaller@2
+          inputs:
+            version: 'v0.6.x'
+        - task: DownloadBuildArtifacts@0
+          inputs:
+            buildType: 'current'
+            downloadType: 'single'
+            artifactName: 'ExtensionFiles'
+            downloadPath: '$(System.DefaultWorkingDirectory)'
+        - task: PublishAzureDevOpsExtension@2
+          inputs:
+            connectTo: 'VsTeam'
+            connectedServiceName: 'KubeflowExtensionBuildAndPublish'
+            fileType: 'vsix'
+            vsixFile: '$(System.DefaultWorkingDirectory)/ExtensionFiles/CSE-DevOps.UploadKubeflowPipeline-*.vsix'
+            publisherId: 'CSE-DevOps'
+            extensionId: 'UploadKubeflowPipeline'
+            extensionName: 'Kubeflow Upload Pipeline'
+            updateTasksVersion: false
+            extensionVisibility: '$(visibility)'
+            extensionPricing: 'free'
+        - task: PublishAzureDevOpsExtension@2
+          inputs:
+            connectTo: 'VsTeam'
+            connectedServiceName: 'KubeflowExtensionBuildAndPublish'
+            fileType: 'vsix'
+            vsixFile: '$(System.DefaultWorkingDirectory)/ExtensionFiles/CSE-DevOps.CreateExperimentRun-*.vsix'
+            publisherId: 'CSE-DevOps'
+            extensionId: 'CreateExperimentRun'
+            extensionName: 'Kubeflow Experiment and Run'
+            updateTasksVersion: false
+            extensionVisibility: '$(visibility)'
+            extensionPricing: 'free'

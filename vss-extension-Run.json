@@ -1,9 +1,9 @@
 {
     "manifestVersion": 1.0,
     "id": "CreateExperimentRun",
-    "name": "Create Kubeflow Experiment and Run",
-    "version": "0.0.0",
-    "publisher": "v-ryzube",
+    "name": "Kubeflow Experiment and Run",
+    "version": "0.1.0",
+    "publisher": "CSE-DevOps",
     "description": "Create a new Experiment and new Run with Kubeflow",
     "targets": [
         {

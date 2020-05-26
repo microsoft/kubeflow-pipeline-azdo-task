@@ -2,7 +2,7 @@
     "manifestVersion": 1.0,
     "id": "UploadKubeflowPipeline",
     "name": "Kubeflow Upload Pipeline",
-    "version": "0.1.2",
+    "version": "0.1.19",
     "publisher": "CSE-DevOps",
     "description": "Simplifies uploading a pipeline to the Kubeflow workspace",
     "targets": [

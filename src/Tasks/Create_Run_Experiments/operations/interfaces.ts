@@ -1,3 +1,31 @@
+export interface IExperiment {
+    id: string,
+    name: string,
+    description: string,
+    created_at: Date,
+    // resource_references: [{key: {}, relationship: string}];
+}
+
+export interface IAllExperiment {
+    experiments: IExperiment[]
+}
+
+export interface IRun {
+    id: string,
+    name: string,
+    description: string,
+    created_at: Date,
+    status: string;
+}
+
+export interface ISingleRun {
+    run: IRun;
+}
+
+export interface IAllRun {
+    runs: IRun[]
+}
+
 export interface IPipeline {
     id: string;
     created_at: Date;
@@ -21,14 +49,4 @@ export interface IPipelineVersion {
 
 export interface IAllPipelineVersion {
     versions: IPipelineVersion[]; 
-}
-
-export interface IUploadPipeline {
-    endpointUrl: string;
-    getAllPipelinesEndpoint: string;
-    pipelineTask: string;
-    pipelineFilePath: string;
-    newPipelineName: string | undefined;
-    existingPipelineName: string | undefined;
-    versionName: string | undefined;
 }

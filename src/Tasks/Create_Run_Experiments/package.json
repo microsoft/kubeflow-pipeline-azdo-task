@@ -1,28 +1,28 @@
 {
-  "name": "upload_pipeline",
+  "name": "create_run_experiments",
   "version": "1.0.0",
-  "description": "Task for uploading a pipeline to the Kubeflow workspace",
+  "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "mocha ./Tests/UploadPipelineTests.js --reporter xunit --reporter-option output=UploadTestResults.xml"
+    "test": "mocha ./Tests/RunTests.js ./Tests/ExperimentTests.js --reporter xunit --reporter-option output=RunTestResults.xml"
   },
   "repository": {
     "type": "git",
     "url": "https://dev.azure.com/csedevops/Kubeflow%20Integration/_git/kubeflow_azdo_task"
   },
-  "author": "CSEDevOps",
+  "author": "v-ryzube",
   "license": "ISC",
   "dependencies": {
     "@types/request": "^2.48.4",
     "azure-pipelines-task-lib": "^2.9.3",
     "form-data": "^3.0.0",
-    "mocha": "^7.1.2",
+    "mocha": "^7.1.1",
     "request": "^2.88.2",
     "typed-rest-client": "^1.7.3"
   },
   "devDependencies": {
     "@types/mocha": "^7.0.2",
-    "@types/node": "^13.13.4",
+    "@types/node": "^13.11.1",
     "@types/q": "^1.5.2",
     "sync-request": "^6.1.0"
   }

@@ -6,10 +6,20 @@ pool:
   vmImage: 'ubuntu-latest'
 
 steps:
-- task: UploadKubeflowPipeline@0
+- task: KubeflowUploadPipeline@0
   inputs:
-    kubeflowEndpoint: 'http://52.149.247.172/'
+    kubeflowEndpoint: 'http://52.149.62.186/'
     kubeflowPipelineTask: 'uploadNewVersion'
     pipelineFilePath: '$(System.DefaultWorkingDirectory)/src/Tasks/Upload_Pipeline/Tests/pipeline.py.tar.gz'
-    existingPipelineName: 'testPipeline'
-    versionName: 'finalization'
+    existingPipelineName: 'azdoTestPipeline'
+    versionName: 'azdoTestV5'
+- task: KubeflowExperimentRun@0
+  inputs:
+    kubeflowEndpoint: 'http://52.149.62.186/'
+    pipeline: 'azdoTestPipeline'
+    useDefaultVersion: false
+    pipelineVersion: 'azdoTestV5'
+    runName: 'newRun'
+    pipelineParams: '[{"name":"resource_group", "value":"kubeflow-integration-rg"}, {"name":"workspace", "value":"kubeflow-integration-aml"}]'
+    experiment: 'useExistingExperiment'
+    experimentName: 'azdoTestExperiment'

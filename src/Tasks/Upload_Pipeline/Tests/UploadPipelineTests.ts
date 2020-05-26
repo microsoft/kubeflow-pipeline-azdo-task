@@ -4,7 +4,7 @@ import { async } from "q";
 var assert = require('assert');
 var fs = require('fs');
 
-var UP = new UploadPipelineMock('http://52.149.247.172/', 'uploadNew', 
+var UP = new UploadPipelineMock('http://52.149.62.186/', 'uploadNew', 
                                 '/home/vsts/work/1/s/src/Tasks/Upload_Pipeline/Tests/pipeline.py.tar.gz', //Azure DevOps Tests
                                 // 'C:/users/v-ryzube/source/repos/kubeflow_azdo_task/src/Tasks/Upload_Pipeline/Tests/pipeline.py.tar.gz', //Local Tests
                                 'newPLName', 'testPipeline', '12345');
