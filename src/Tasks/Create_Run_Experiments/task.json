@@ -64,7 +64,6 @@
             "name": "useDefaultVersion",
             "type": "boolean",
             "label": "Use Default Version",
-            "defaultValue": "false",
             "helpMarkDown": "If checked, will use the original version created with the pipeline.",
             "groupName": "Pipeline",
             "required": true
@@ -120,7 +119,6 @@
             "name": "waitForRunToFinish",
             "type": "boolean",
             "label": "Wait for run to complete",
-            "defaultValue": true,
             "helpMarkDown": "If checked, the task will monitor the runs status and fail if the run fails.",
             "groupName": "Run",
             "visibleRule": "createNewRun=true"
