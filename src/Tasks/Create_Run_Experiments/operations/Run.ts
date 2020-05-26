@@ -45,7 +45,7 @@ export class Run {
         }
         this.pipelineParams = task.getInput('pipelineParams', false)!;
         this.description = task.getInput('runDescription', false)!;
-        this.waitForRunToFinish = task.getBoolInput('waitForRunToFinish', true);
+        this.waitForRunToFinish = task.getBoolInput('waitForRunToFinish', false);
         this.experiment = task.getInput('experiment', true)!;
         this.experimentName = task.getInput('experimentName', true)!;
         this.runType = 'One-Off';
