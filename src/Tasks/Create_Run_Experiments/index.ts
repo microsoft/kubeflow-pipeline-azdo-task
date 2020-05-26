@@ -13,9 +13,8 @@ async function run() {
                 await EXP.createExperiment();
             }
         }
-        if (RUN.createNewRun) {
-
-            if (await RUN.runValidations()) {
+        if (await RUN.runValidations()) {
+            if (RUN.createNewRun) {
 
                 await RUN.createRun();
                 if (RUN.waitForRunToFinish == true) {
