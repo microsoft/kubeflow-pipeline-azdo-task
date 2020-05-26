@@ -14,8 +14,8 @@
     "instanceNameFormat": "Create an experiment and a run",
     "groups": [
         {
-            "name": "Run",
-            "displayName": "Run",
+            "name": "Pipeline",
+            "displayName": "Pipeline",
             "isExpanded": true,
             "visibleRule": ""
         },
@@ -24,8 +24,14 @@
             "displayName": "Experiment",
             "isExpanded": true,
             "visibleRule": ""
+        },
+        {
+            "name": "Run",
+            "displayName": "Run",
+            "isExpanded": true,
+            "visibleRule": ""
         }
-      ],
+    ],
     "inputs": [
         {
             "name": "kubeflowEndpoint",
@@ -34,7 +40,7 @@
             "defaultValue": "",
             "required": true,
             "helpMarkDown": "Input the URL of the Kubeflow workspace you are trying to use. Make sure you put in the url for the homepage in the following format: http://yourURL/",
-            "groupName": "Run"
+            "groupName": "Pipeline"
         },
         {
             "name": "bearerToken",
@@ -43,7 +49,7 @@
             "defaultValue": "",
             "required": false,
             "helpMarkDown": "DO NOT USE RAW TOKEN! For help creating secret variables visit https://docs.microsoft.com/en-us/azure/devops/pipelines/process/variables?view=azure-devops&tabs=yaml%2Cbatch#secret-variables",
-            "groupName": "Run"
+            "groupName": "Pipeline"
         },
         {
             "name": "pipeline",
@@ -52,7 +58,7 @@
             "defaultValue": "",
             "required": true,
             "helpMarkDown": "Choose the pipeline you would like to run.",
-            "groupName": "Run"
+            "groupName": "Pipeline"
         },
         {
             "name": "useDefaultVersion",
@@ -60,7 +66,7 @@
             "label": "Use Default Version",
             "defaultValue": "false",
             "helpMarkDown": "If checked, will use the original version created with the pipeline.",
-            "groupName": "Run",
+            "groupName": "Pipeline",
             "required": true
         },
         {
@@ -70,6 +76,14 @@
             "defaultValue": "",
             "required": true,
             "helpMarkDown": "Choose the pipeline version you would like to run.",
+            "groupName": "Pipeline"
+        },
+        {
+            "name": "createNewRun",
+            "type": "boolean",
+            "label": "Create New Pipeline Run",
+            "defaultValue": false,
+            "helpMarkDown": "If checked will create new pipeline run",
             "groupName": "Run"
         },
         {
@@ -77,9 +91,10 @@
             "type": "string",
             "label": "Run Name",
             "defaultValue": "",
-            "required": true,
+            "required": false,
             "helpMarkDown": "The name of the new run.",
-            "groupName": "Run"
+            "groupName": "Run",
+            "visibleRule": "createNewRun=true"
         },
         {
             "name": "pipelineParams",
@@ -88,7 +103,8 @@
             "defaultValue": "",
             "required": false,
             "helpMarkDown": "Input any parameters you would like to add in the following format: [{\"name\":\"VAR_NAME\", \"value\":\"VAR_VALUE\"}, {\"name\":\"VAR_NAME\", \"value\":\"VAR_VALUE\"}]",
-            "groupName": "Run"
+            "groupName": "Run",
+            "visibleRule": "createNewRun=true"
         },
         {
             "name": "runDescription",
@@ -97,7 +113,8 @@
             "defaultValue": "",
             "required": false,
             "helpMarkDown": "Description of the new run.",
-            "groupName": "Run"
+            "groupName": "Run",
+            "visibleRule": "createNewRun=true"
         },
         {
             "name": "waitForRunToFinish",
@@ -105,7 +122,8 @@
             "label": "Wait for run to complete",
             "defaultValue": true,
             "helpMarkDown": "If checked, the task will monitor the runs status and fail if the run fails.",
-            "groupName": "Run"
+            "groupName": "Run",
+            "visibleRule": "createNewRun=true"
         },
         {
             "name": "experiment",

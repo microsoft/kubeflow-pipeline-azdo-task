@@ -7,20 +7,25 @@ import { Run } from "./operations/Run";
 async function run() {
     try {
         var RUN = new Run();
-        if(RUN.experiment == 'createNewExperiment') {
+        if (RUN.experiment == 'createNewExperiment') {
             var EXP = new Experiment();
-            if(await EXP.runValidations()) {
+            if (await EXP.runValidations()) {
                 await EXP.createExperiment();
             }
         }
-        if(await RUN.runValidations()) {
-            await RUN.createRun();
-            if(RUN.waitForRunToFinish == true) {
-                await RUN.monitorRun();
+        if (RUN.createNewRun) {
+
+            if (await RUN.runValidations()) {
+
+                await RUN.createRun();
+                if (RUN.waitForRunToFinish == true) {
+                    await RUN.monitorRun();
+                }
+
             }
         }
     }
-    catch(error) {
+    catch (error) {
         task.setResult(task.TaskResult.Failed, error.message);
     }
 }
