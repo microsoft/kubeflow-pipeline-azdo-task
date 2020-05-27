@@ -1,0 +1,99 @@
+#Pipeline for building and publishing the Kubeflow task
+pool:
+  vmImage: "ubuntu-latest"
+
+variables:
+  stagingPublisher: "sudivate"
+  productionPublisher: "CSE-DevOps"
+  runAsyncExtensionId: "private-kfexperimentrun-async"
+  createExperimentAsync: "private-kfcreateexperiment-async"
+
+jobs:
+  - job: BuildAndPackage
+    displayName: Build and Package Extension
+    steps:
+      - task: UseNode@1
+        inputs:
+          version: "12.16.0"
+          checkLatest: false
+
+      - task: TfxInstaller@2
+        inputs:
+          version: "v0.6.x"
+
+      - task: Npm@1
+        displayName: "Installing Dependencies required by Kubeflow Upload Task"
+        inputs:
+          command: "install"
+          workingDir: "src/Tasks/Create_Run_Experiments_Async"
+
+      - task: QueryAzureDevOpsExtensionVersion@2
+        displayName: CSE-DevOps Get Existing Kubeflow Run Patch Number
+        inputs:
+          connectTo: "VsTeam"
+          connectedServiceName: "KubeflowExtensionBuildAndPublish"
+          publisherId: "$(productionPublisher)"
+          extensionId: "$(runAsyncExtensionId)"
+          versionAction: "Patch"
+          outputVariable: "Run.Extension.Version"
+
+      - task: PackageAzureDevOpsExtension@2
+        displayName: CSE-DevOps Package Kubeflow Run Extension
+        inputs:
+          rootFolder: "$(System.DefaultWorkingDirectory)"
+          patternManifest: "vss-extension-RunAsync.json"
+          publisherId: "$(productionPublisher)"
+          extensionId: "$(runAsyncExtensionId)"
+          extensionName: "Kubeflow Experiment Run Async"
+          extensionVersion: "$(Run.Extension.Version)"
+          updateTasksVersion: true
+          updateTasksVersionType: "patch"
+          extensionVisibility: "private"
+          extensionPricing: "free"
+
+      - task: PublishAzureDevOpsExtension@2
+        inputs:
+          connectTo: "VsTeam"
+          connectedServiceName: "KubeflowExtensionBuildAndPublish"
+          fileType: "vsix"
+          vsixFile: "$(System.DefaultWorkingDirectory)/CSE-DevOps.private-kfexperimentrun-async-*.vsix"
+          publisherId: "CSE-DevOps"
+          extensionId: "$(runAsyncExtensionId)"
+          extensionName: "Kubeflow Experiment Run Async"
+          updateTasksVersion: false
+          extensionVisibility: "private"
+          extensionPricing: "free"
+      # - task: QueryAzureDevOpsExtensionVersion@2
+      #   displayName: CSE-DevOps Get Existing Kubeflow Create Experiment Patch Number
+      #   inputs:
+      #     connectTo: "VsTeam"
+      #     connectedServiceName: "KubeflowExtensionBuildAndPublish"
+      #     publisherId: "$(productionPublisher)"
+      #     extensionId: "$(createExperimentAsync)"
+      #     versionAction: "Patch"
+      #     outputVariable: "Run.Extension.Version_experiment"
+      # - task: PackageAzureDevOpsExtension@2
+      #   displayName: CSE-DevOps Package Kubeflow Run Extension
+      #   inputs:
+      #     rootFolder: "$(System.DefaultWorkingDirectory)"
+      #     patternManifest: "vss-extension-kf-experiment-async.json"
+      #     publisherId: "$(productionPublisher)"
+      #     extensionId: "$(createExperimentAsync)"
+      #     extensionName: "Kubeflow Create Experiment Async"
+      #     extensionVersion: "$(Run.Extension.Version_experiment)"
+      #     updateTasksVersion: true
+      #     updateTasksVersionType: "patch"
+      #     extensionVisibility: "private"
+      #     extensionPricing: "free"
+      # - task: PublishAzureDevOpsExtension@2
+      #   inputs:
+      #     connectTo: "VsTeam"
+      #     connectedServiceName: "KubeflowExtensionBuildAndPublish"
+      #     fileType: "vsix"
+      #     vsixFile: "$(System.DefaultWorkingDirectory)/CSE-DevOps.private-kfcreateexperiment-async-*.vsix"
+      #     publisherId: "CSE-DevOps"
+      #     extensionId: "$(createExperimentAsync)"
+      #     extensionName: "Kubeflow Create Experiment Async"
+      #     updateTasksVersion: false
+      #     extensionVisibility: "private"
+      #     extensionPricing: "free"
