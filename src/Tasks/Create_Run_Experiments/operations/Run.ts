@@ -137,7 +137,7 @@ export class Run {
             if (this.pipelineParams == '' || this.pipelineParams == undefined) {
                 return true;
             }
-            JSON.parse(this.pipelineParams);
+            JSON.parse(`[${this.pipelineParams}]`);
             return true;
         }
         catch (error) {
@@ -159,8 +159,10 @@ export class Run {
             if (!await this.validateExperimentName()) {
                 throw new Error('Experiment not found. Please make sure you are using an existing experiment from your Kubeflow workspace.');
             }
-            if (!await this.validatePipelineParams()) {
-                throw new Error('Pipeline Params must contain resource_group and workspace parameters.');
+            if(this.createNewRun) {
+                if(!await this.validatePipelineParams()) {
+                    throw new Error('Pipeline Params must be a valid json object array.');
+                }
             }
             return true;
         }
@@ -175,7 +177,6 @@ export class Run {
     public async createRun() {
         try {
             if (this.pipelineParams == '' || this.pipelineParams == undefined) {
-                console.log('hitting the right place');
                 var form = `{"name": "${this.runName}", "description": "${this.description}",
                 "pipeline_spec": {"parameters": []},
                 "resource_references": [{"key": {"id": "${this.experimentID}", "type": "EXPERIMENT"}, "relationship": "OWNER"},
@@ -183,7 +184,7 @@ export class Run {
             }
             else {
                 var form = `{"name": "${this.runName}", "description": "${this.description}", 
-                "pipeline_spec": {"parameters": ${this.pipelineParams}},
+                "pipeline_spec": {"parameters": [${this.pipelineParams}]},
                 "resource_references": [{"key": {"id": "${this.experimentID}", "type": "EXPERIMENT"}, "relationship": "OWNER"},
                 {"key": {"id": "${this.pipelineVersionID}", "type": "PIPELINE_VERSION"}, "relationship": "CREATOR"}]}`;
             }

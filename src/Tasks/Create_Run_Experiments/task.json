@@ -8,8 +8,8 @@
     "author": "CSE-DevOps",
     "version": {
         "Major": 0,
-        "Minor": 1,
-        "Patch": 0
+        "Minor": 0,
+        "Patch": 1
     },
     "instanceNameFormat": "Create an experiment and a run",
     "groups": [
@@ -101,7 +101,7 @@
             "label": "Pipeline Params",
             "defaultValue": "",
             "required": false,
-            "helpMarkDown": "Input any parameters you would like to add in the following format: [{\"name\":\"VAR_NAME\", \"value\":\"VAR_VALUE\"}, {\"name\":\"VAR_NAME\", \"value\":\"VAR_VALUE\"}]",
+            "helpMarkDown": "Input any parameters you would like to add in the following format: {\"name\":\"VAR_NAME\", \"value\":\"VAR_VALUE\"}, {\"name\":\"VAR_NAME\", \"value\":\"VAR_VALUE\"}",
             "groupName": "Run",
             "visibleRule": "createNewRun=true"
         },

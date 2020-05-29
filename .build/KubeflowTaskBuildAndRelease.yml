@@ -8,9 +8,8 @@ pool:
 
 variables:
   productionPublisher: "CSE-DevOps"
-  uploadExtensionId: "UploadKubeflowPipeline"
-  runExtensionId: "CreateExperimentRun"
-  visibility: "private"
+  taskExtensionId: "KubeflowTasks"
+  taskExtensionName: "Kubeflow Pipelines Tasks"
 
 stages:
   - stage:
@@ -36,7 +35,6 @@ stages:
             inputs:
               targetType: "inline"
               script: |
-                npm audit fix
                 cd src/Tasks/Upload_Pipeline
                 tsc
                 cd ..
@@ -86,56 +84,32 @@ stages:
             inputs:
               targetType: "inline"
               script: |
-                npm audit fix
                 cd src/Tasks/Upload_Pipeline
                 tsc
                 cd ..
                 cd Create_Run_Experiments
                 tsc
           - task: QueryAzureDevOpsExtensionVersion@2
-            displayName: CSE-DevOps Get Existing Kubeflow Run Patch Number
-            inputs:
-              connectTo: "VsTeam"
-              connectedServiceName: "KubeflowExtensionBuildAndPublish"
-              publisherId: "$(productionPublisher)"
-              extensionId: "$(runExtensionId)"
-              versionAction: "Patch"
-              outputVariable: "Run.Extension.Version"
-          - task: PackageAzureDevOpsExtension@2
-            displayName: CSE-DevOps Package Kubeflow Run Extension
-            inputs:
-              rootFolder: "$(System.DefaultWorkingDirectory)"
-              patternManifest: "vss-extension-Run.json"
-              publisherId: "$(productionPublisher)"
-              extensionId: "$(runExtensionId)"
-              extensionName: "Kubeflow Experiment and Run"
-              extensionVersion: "$(Run.Extension.Version)"
-              updateTasksVersion: true
-              updateTasksVersionType: "patch"
-              extensionVisibility: "private"
-              extensionPricing: "free"
-          - task: QueryAzureDevOpsExtensionVersion@2
             displayName: CSE-DevOps Get Existing Kubeflow Upload Patch Number
             inputs:
               connectTo: "VsTeam"
               connectedServiceName: "KubeflowExtensionBuildAndPublish"
               publisherId: "$(productionPublisher)"
-              extensionId: "$(uploadExtensionId)"
+              extensionId: "$(taskExtensionId)"
               versionAction: "Patch"
-              outputVariable: "Upload.Extension.Version"
+              outputVariable: "Task.Extension.Version"
           - task: PackageAzureDevOpsExtension@2
             displayName: CSE-DevOps Package Kubeflow Upload Extension
             inputs:
-              rootFolder: "$(System.DefaultWorkingDirectory)"
-              patternManifest: "vss-extension-Upload.json"
-              publisherId: "$(productionPublisher)"
-              extensionId: "$(uploadExtensionId)"
-              extensionName: "Kubeflow Upload Pipeline"
-              extensionVersion: "$(Upload.Extension.Version)"
+              rootFolder: '$(System.DefaultWorkingDirectory)'
+              patternManifest: 'vss-extension-kubeflow-pipelines.json'
+              publisherId: '$(productionPublisher)'
+              extensionId: '$(taskExtensionId)'
+              extensionName: '$(taskExtensionName)'
+              extensionVersion: '$(Task.Extension.Version)'
               updateTasksVersion: true
-              updateTasksVersionType: "patch"
-              extensionVisibility: "private"
-              extensionPricing: "free"
+              updateTasksVersionType: 'patch'
+              extensionPricing: 'free'
           - task: CopyFiles@2
             displayName: "Copy Files to: $(Build.ArtifactStagingDirectory)"
             inputs:
@@ -148,7 +122,7 @@ stages:
               publishLocation: "Container"
 
   - stage: Publish_Extensions
-    displayName: Publish Extensions
+    displayName: Publish Extension Private
     jobs:
       - job:
         steps:
@@ -166,22 +140,37 @@ stages:
               connectTo: "VsTeam"
               connectedServiceName: "KubeflowExtensionBuildAndPublish"
               fileType: "vsix"
-              vsixFile: "$(System.DefaultWorkingDirectory)/ExtensionFiles/CSE-DevOps.UploadKubeflowPipeline-*.vsix"
+              vsixFile: "$(System.DefaultWorkingDirectory)/ExtensionFiles/CSE-DevOps.*.vsix"
               publisherId: "CSE-DevOps"
-              extensionId: "UploadKubeflowPipeline"
-              extensionName: "Kubeflow Upload Pipeline"
+              extensionId: "$(taskExtensionId)"
+              extensionName: "$(taskExtensionName)"
               updateTasksVersion: false
-              extensionVisibility: "$(visibility)"
+              extensionVisibility: "private"
               extensionPricing: "free"
-          - task: PublishAzureDevOpsExtension@2
-            inputs:
-              connectTo: "VsTeam"
-              connectedServiceName: "KubeflowExtensionBuildAndPublish"
-              fileType: "vsix"
-              vsixFile: "$(System.DefaultWorkingDirectory)/ExtensionFiles/CSE-DevOps.CreateExperimentRun-*.vsix"
-              publisherId: "CSE-DevOps"
-              extensionId: "CreateExperimentRun"
-              extensionName: "Kubeflow Experiment and Run"
-              updateTasksVersion: false
-              extensionVisibility: "$(visibility)"
-              extensionPricing: "free"
+
+  # - stage:
+  #   displayName: Publish Extension Public
+  #   jobs:
+  #     - job: 
+  #       steps:
+  #         - task: TfxInstaller@2
+  #           inputs:
+  #             version: 'v0.6.x'
+  #         - task: DownloadBuildArtifacts@0
+  #           inputs:
+  #             buildType: "current"
+  #             downloadType: "single"
+  #             artifactName: "ExtensionFiles"
+  #             downloadPath: "$(System.DefaultWorkingDirectory)"
+  #         - task: PublishAzureDevOpsExtension@2
+  #           inputs:
+  #             connectTo: "VsTeam"
+  #             connectedServiceName: "KubeflowExtensionBuildAndPublish"
+  #             fileType: "vsix"
+  #             vsixFile: "$(System.DefaultWorkingDirectory)/ExtensionFiles/CSE-DevOps.*.vsix"
+  #             publisherId: "CSE-DevOps"
+  #             extensionId: "$(taskExtensionId)"
+  #             extensionName: "$(taskExtensionName)"
+  #             updateTasksVersion: false
+  #             extensionVisibility: "public"
+  #             extensionPricing: "free"

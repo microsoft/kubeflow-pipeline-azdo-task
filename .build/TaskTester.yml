@@ -5,21 +5,84 @@ trigger: none
 pool:
   vmImage: 'ubuntu-latest'
 
-steps:
-- task: KubeflowUploadPipeline@0
-  inputs:
-    kubeflowEndpoint: 'http://52.149.62.186/'
-    kubeflowPipelineTask: 'uploadNewVersion'
-    pipelineFilePath: '$(System.DefaultWorkingDirectory)/src/Tasks/Upload_Pipeline/Tests/pipeline.py.tar.gz'
-    existingPipelineName: 'azdoTestPipeline'
-    versionName: 'azdoTestV5'
-- task: KubeflowExperimentRun@0
-  inputs:
-    kubeflowEndpoint: 'http://52.149.62.186/'
-    pipeline: 'azdoTestPipeline'
-    useDefaultVersion: false
-    pipelineVersion: 'azdoTestV5'
-    runName: 'newRun'
-    pipelineParams: '[{"name":"resource_group", "value":"kubeflow-integration-rg"}, {"name":"workspace", "value":"kubeflow-integration-aml"}]'
-    experiment: 'useExistingExperiment'
-    experimentName: 'azdoTestExperiment'
+variables: 
+  - group: kubeflow-task-tester-variables
+
+# stages:
+# - stage:
+jobs:
+  - job: "Upload_Pipeline" 
+    steps:
+    - task: KubeflowUploadPipeline@0
+      inputs:
+        kubeflowEndpoint: '$(KF_ENDPOINT)'
+        kubeflowPipelineTask: '$(KF_UPLOAD_CHOICE)'
+        pipelineFilePath: '$(KF_PIPELINE_FILE)'
+        existingPipelineName: '$(KF_EXISTING_PIPELINE_NAME)'
+        versionName: '$(KF_NEW_VERSION_NAME)'
+    - task: Bash@3
+      inputs:
+        targetType: 'inline'
+        script: |
+          echo Pipeline Name: $(kf_pipeline_name)
+          echo Pipeline Id: $(kf_pipeline_id)
+          echo Pipeline Version Name: $(kf_pipeline_version_name)
+          echo Pipeline Version Id: $(kf_pipeline_version_id)
+    - task: KubeflowExperimentRun@0
+      inputs:
+        kubeflowEndpoint: '$(KF_ENDPOINT)'
+        pipeline: '$(kf_pipeline_name)'
+        useDefaultVersion: false
+        pipelineVersion: '$(kf_pipeline_version_name)'
+        createNewRun: true
+        runName: '$(KF_RUN_NAME)-0'
+        pipelineParams: '$(KF_PIPELINE_PARAMS)'
+        experiment: 'useExistingExperiment'
+        experimentName: '$(KF_EXPERIMENT_NAME)'
+        waitForRunToFinish: false
+    - task: Bash@3
+      inputs:
+        targetType: 'inline'
+        script: |
+          echo Pipeline Id: $(kf_pipeline_id)
+          echo Pipeline Version Id: $(kf_pipeline_version_id)
+          echo Experiment Id: $(kf_experiment_id)
+          echo Run Id: $(kf_run_id)
+    - task: KubeflowExperimentRun@0
+      inputs:
+        kubeflowEndpoint: '$(KF_ENDPOINT)'
+        pipeline: '$(KF_CALLBACK_PIPELINE)'
+        useDefaultVersion: true
+        pipelineVersion: '$(KF_CALLBACK_PIPELINE_VERSION)'
+        createNewRun: true
+        runName: '$(KF_RUN_NAME)-1'
+        pipelineParams: '$(KF_PIPELINE_PARAMS)'
+        waitForRunToFinish: false
+        experiment: 'createNewExperiment'
+        experimentName: '$(KF_EXPERIMENT_NAME)-$(Build.BuildNumber)'
+    - task: Bash@3
+      name: "setpipelinevars"
+      displayName: "Set Variables for Async Job"
+      inputs:
+        targetType: 'inline'
+        script: |
+          KFPipelineVersionId=$(kf_pipeline_version_id)
+          echo "##vso[task.setvariable variable=KFPipelineVersionId;isOutput=true]$KFPipelineVersionId"
+          KFEXPID=$(kf_experiment_id)
+          echo "##vso[task.setvariable variable=KFEXPID;isOutput=true]$KFEXPID"
+
+  - job:
+    dependsOn: "Upload_Pipeline"
+    pool: server
+    variables:
+      PIPELINE_VERSION_ID: $[ dependencies.Upload_Pipeline.outputs['setpipelinevars.KFPipelineVersionId'] ]
+      EXPERIMENT_ID: $[ dependencies.Upload_Pipeline.outputs['setpipelinevars.KFEXPID'] ]
+    steps:
+    - task: private-kfexperimentrun-async@0
+      inputs:
+        kubeflowEndpoint: '$(KF_ENDPOINT_ASYNC)'
+        pipelineVersionID: '$(PIPELINE_VERSION_ID)'
+        experimentID: '$(EXPERIMENT_ID)'
+        runName: '$(KF_RUN_NAME)-2'
+        pipelineParams: '$(KF_PIPELINE_PARAMS)'
+        waitForCompletion: false

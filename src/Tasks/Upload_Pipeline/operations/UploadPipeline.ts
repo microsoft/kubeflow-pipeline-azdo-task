@@ -171,7 +171,7 @@ export class UploadPipeline implements IUploadPipeline {
                             return false;
                         }
                     }
-                    task.setVariable('kf_version_name', this.versionName);
+                    task.setVariable('kf_pipeline_version_name', this.versionName);
                     return true;
                 }
                 return false;
@@ -345,7 +345,7 @@ export class UploadPipeline implements IUploadPipeline {
                 if(versions != undefined) {
                     for(var i = 0; i < versions.length; i++) {
                         if(versions[i].name == this.versionName) {
-                            task.setVariable('kf_version_id', versions[i].id);
+                            task.setVariable('kf_pipeline_version_id', versions[i].id);
                             return versions[i].id;
                         }
                     }
