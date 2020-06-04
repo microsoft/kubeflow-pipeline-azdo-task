@@ -145,7 +145,7 @@ stages:
               extensionId: "$(taskExtensionId)"
               extensionName: "$(taskExtensionName)"
               updateTasksVersion: false
-              extensionVisibility: "private"
+              extensionVisibility: "privatepreview"
               extensionPricing: "free"
 
   # - stage:

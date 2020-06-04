@@ -1,14 +1,13 @@
 {
     "manifestVersion": 1.0,
     "id": "KubeflowTasks",
-    "name": "Kubeflow Pipelines Tasks",
+    "name": "Kubeflow Pipeline Tasks",
     "version": "0.0.1",
     "publisher": "CSE-DevOps",
-    "description": "Kubeflow pipeline tasks to upload pipeline, create an experiment, and trigger pipeline runs in both sync and async manner.",
+    "description": "Kubeflow pipeline tasks to upload pipeline, create an experiment and trigger pipeline runs both in synchronous and asynchronous way.",
     "content": {
-        "details": { 
-            "path": "README.md"
-        }
+        "details": { "path": "overview.md" },
+        "license": { "path": "license.md" }
     },
     "targets": [
         {
@@ -18,8 +17,15 @@
     "categories": [
         "Azure Pipelines"
     ],
+    "tags": [
+        "kubeflow",
+        "aks",
+        "mlops",
+        "machine learning",
+        "ml"
+    ],
     "icons": {
-        "default": "images/uploadIcon.png"        
+        "default": "images/Icon.png"        
     },
     "files": [
         {

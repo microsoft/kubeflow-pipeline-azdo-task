@@ -23,11 +23,11 @@
         {
             "name": "kubeflowEndpoint",
             "type": "string",
-            "label": "Kubeflow Endpoint",
+            "label": "Kubeflow API Endpoint Base URL",
             "group": "UploadPipeline",
             "defaultValue": "",
             "required": true,
-            "helpMarkDown": "Input the URL of the Kubeflow workspace you are trying to upload to. Make sure you put in the url for the homepage in the following format: http://yourURL/",
+            "helpMarkDown": "Kubeflow API endpoint base URL format http://yourURL/",
             "properties": {
                 "EditableOptions": "True"
             }
@@ -39,12 +39,12 @@
             "group": "UploadPipeline",
             "defaultValue": "",
             "required": false,
-            "helpMarkDown": "DO NOT USE RAW TOKEN! For help creating secret variables visit https://docs.microsoft.com/en-us/azure/devops/pipelines/process/variables?view=azure-devops&tabs=yaml%2Cbatch#secret-variables"
+            "helpMarkDown": "Do not input raw tokens. Read more on how to handle secrets https://docs.microsoft.com/en-us/azure/devops/pipelines/process/variables?view=azure-devops&tabs=yaml%2Cbatch#secret-variables"
         },
         {
             "name": "kubeflowPipelineTask",
             "type": "pickList",
-            "label": "Kubeflow Pipeline Task",
+            "label": "Kubeflow Pipeline Upload Type",
             "group": "UploadPipeline",
             "defaultValue": "",
             "required": true,
@@ -70,7 +70,7 @@
             "group": "UploadPipeline",
             "defaultValue": "",
             "required": false,
-            "helpMarkDown": "The name you would like to give your pipeline.",
+            "helpMarkDown": "Pipeline name for new upload.",
             "visibleRule": "kubeflowPipelineTask = uploadNew"
         },
         {
@@ -80,7 +80,7 @@
             "group": "UploadPipeline",
             "defaultValue": "",
             "required": false,
-            "helpMarkDown": "Choose an existing pipeline to make a new version of.",
+            "helpMarkDown": "Existing pipeline name to create new version.",
             "visibleRule": "kubeflowPipelineTask = uploadNewVersion"
         },
         {
@@ -90,7 +90,7 @@
             "group": "UploadPipeline",
             "defaultValue": "",
             "required": false,
-            "helpMarkDown": "The name of your new version of the pipeline.",
+            "helpMarkDown": "New pipeline version name.",
             "visibleRule": "kubeflowPipelineTask = uploadNewVersion"
         }
     ],

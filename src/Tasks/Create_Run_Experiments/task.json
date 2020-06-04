@@ -36,10 +36,10 @@
         {
             "name": "kubeflowEndpoint",
             "type": "string",
-            "label": "Kubeflow Endpoint",
+            "label": "Kubeflow API Endpoint Base URL",
             "defaultValue": "",
             "required": true,
-            "helpMarkDown": "Input the URL of the Kubeflow workspace you are trying to use. Make sure you put in the url for the homepage in the following format: http://yourURL/",
+            "helpMarkDown": "Kubeflow API endpoint base URL format http://yourURL/",
             "groupName": "Pipeline"
         },
         {
@@ -48,33 +48,33 @@
             "label": "Bearer Token",
             "defaultValue": "",
             "required": false,
-            "helpMarkDown": "DO NOT USE RAW TOKEN! For help creating secret variables visit https://docs.microsoft.com/en-us/azure/devops/pipelines/process/variables?view=azure-devops&tabs=yaml%2Cbatch#secret-variables",
+            "helpMarkDown": "Do not input raw tokens. Read more on how to handle secrets https://docs.microsoft.com/en-us/azure/devops/pipelines/process/variables?view=azure-devops&tabs=yaml%2Cbatch#secret-variables",
             "groupName": "Pipeline"
         },
         {
             "name": "pipeline",
             "type": "string",
-            "label": "Pipeline",
+            "label": "Pipeline Name",
             "defaultValue": "",
             "required": true,
-            "helpMarkDown": "Choose the pipeline you would like to run.",
+            "helpMarkDown": "Kubeflow pipeline name.",
             "groupName": "Pipeline"
         },
         {
             "name": "useDefaultVersion",
             "type": "boolean",
             "label": "Use Default Version",
-            "helpMarkDown": "If checked, will use the original version created with the pipeline.",
+            "helpMarkDown": "If checked, will use the version name of the Kubeflow pipeline.",
             "groupName": "Pipeline",
             "required": true
         },
         {
             "name": "pipelineVersion",
             "type": "string",
-            "label": "Pipeline Version",
+            "label": "Pipeline Version Name",
             "defaultValue": "",
             "required": true,
-            "helpMarkDown": "Choose the pipeline version you would like to run.",
+            "helpMarkDown": "Pipeline version name.",
             "groupName": "Pipeline"
         },
         {
@@ -82,7 +82,7 @@
             "type": "boolean",
             "label": "Create New Pipeline Run",
             "defaultValue": false,
-            "helpMarkDown": "If checked will create new pipeline run",
+            "helpMarkDown": "Create a new pipeline run from agent job.",
             "groupName": "Run"
         },
         {
@@ -91,7 +91,7 @@
             "label": "Run Name",
             "defaultValue": "",
             "required": false,
-            "helpMarkDown": "The name of the new run.",
+            "helpMarkDown": "The name of the new pipeline run.",
             "groupName": "Run",
             "visibleRule": "createNewRun=true"
         },
@@ -101,7 +101,7 @@
             "label": "Pipeline Params",
             "defaultValue": "",
             "required": false,
-            "helpMarkDown": "Input any parameters you would like to add in the following format: {\"name\":\"VAR_NAME\", \"value\":\"VAR_VALUE\"}, {\"name\":\"VAR_NAME\", \"value\":\"VAR_VALUE\"}",
+            "helpMarkDown": "Pipeline Parameters in the format: {\"name\":\"VAR_NAME\", \"value\":\"VAR_VALUE\"}, {\"name\":\"VAR_NAME\", \"value\":\"VAR_VALUE\"}",
             "groupName": "Run",
             "visibleRule": "createNewRun=true"
         },
@@ -111,7 +111,7 @@
             "label": "Description",
             "defaultValue": "",
             "required": false,
-            "helpMarkDown": "Description of the new run.",
+            "helpMarkDown": "Description for the new pipeline run.",
             "groupName": "Run",
             "visibleRule": "createNewRun=true"
         },
@@ -119,7 +119,7 @@
             "name": "waitForRunToFinish",
             "type": "boolean",
             "label": "Wait for run to complete",
-            "helpMarkDown": "If checked, the task will monitor the runs status and fail if the run fails.",
+            "helpMarkDown": "If checked, the task will monitor the runs status and fail if the run fails, on agent job.",
             "groupName": "Run",
             "visibleRule": "createNewRun=true"
         },
