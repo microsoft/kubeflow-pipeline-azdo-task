@@ -10,7 +10,8 @@ variables:
   productionPublisher: "CSE-DevOps"
   taskExtensionId: "KubeflowTasks"
   taskExtensionName: "Kubeflow Pipelines Tasks"
-
+  -group: kubeflow-azdo-custom-task-release
+  
 stages:
   - stage:
     displayName: Code Quality
@@ -102,7 +103,7 @@ stages:
             displayName: CSE-DevOps Package Kubeflow Upload Extension
             inputs:
               rootFolder: '$(System.DefaultWorkingDirectory)'
-              patternManifest: 'vss-extension-kubeflow-pipelines.json'
+              patternManifest: '$(MANIFEST_FILE)'
               publisherId: '$(productionPublisher)'
               extensionId: '$(taskExtensionId)'
               extensionName: '$(taskExtensionName)'
@@ -145,32 +146,6 @@ stages:
               extensionId: "$(taskExtensionId)"
               extensionName: "$(taskExtensionName)"
               updateTasksVersion: false
-              extensionVisibility: "privatepreview"
+              extensionVisibility: "$(EXTENSION_VISIBILITY)"
               extensionPricing: "free"
-
-  # - stage:
-  #   displayName: Publish Extension Public
-  #   jobs:
-  #     - job: 
-  #       steps:
-  #         - task: TfxInstaller@2
-  #           inputs:
-  #             version: 'v0.6.x'
-  #         - task: DownloadBuildArtifacts@0
-  #           inputs:
-  #             buildType: "current"
-  #             downloadType: "single"
-  #             artifactName: "ExtensionFiles"
-  #             downloadPath: "$(System.DefaultWorkingDirectory)"
-  #         - task: PublishAzureDevOpsExtension@2
-  #           inputs:
-  #             connectTo: "VsTeam"
-  #             connectedServiceName: "KubeflowExtensionBuildAndPublish"
-  #             fileType: "vsix"
-  #             vsixFile: "$(System.DefaultWorkingDirectory)/ExtensionFiles/CSE-DevOps.*.vsix"
-  #             publisherId: "CSE-DevOps"
-  #             extensionId: "$(taskExtensionId)"
-  #             extensionName: "$(taskExtensionName)"
-  #             updateTasksVersion: false
-  #             extensionVisibility: "public"
-  #             extensionPricing: "free"
+  

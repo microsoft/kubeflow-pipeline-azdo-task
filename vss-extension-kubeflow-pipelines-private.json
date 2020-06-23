@@ -1,0 +1,77 @@
+{
+    "manifestVersion": 1.0,
+    "id": "Private-KubeflowTasks",
+    "name": "Kubeflow Pipeline Tasks",
+    "version": "0.0.1",
+    "publisher": "CSE-DevOps",
+    "description": "Kubeflow pipeline tasks to upload pipeline, create an experiment and trigger pipeline runs both in synchronous and asynchronous way.",
+    "content": {
+        "details": {
+            "path": "overview.md"
+        },
+        "license": {
+            "path": "license.md"
+        }
+    },
+    "targets": [
+        {
+            "id": "Microsoft.VisualStudio.Services"
+        }
+    ],
+    "categories": [
+        "Azure Pipelines"
+    ],
+    "tags": [
+        "kubeflow",
+        "aks",
+        "mlops",
+        "machine learning",
+        "ml"
+    ],
+    "icons": {
+        "default": "images/Icon.png"
+    },
+    "files": [
+        {
+            "path": "src/Tasks/Create_Run_Experiments"
+        },
+        {
+            "path": "src/Tasks/Upload_Pipeline"
+        },
+        {
+            "path": "src/Tasks/Create_Run_Experiments_Async"
+        }
+    ],
+    "contributions": [
+        {
+            "id": "CreateExperimentRun",
+            "type": "ms.vss-distributed-task.task",
+            "targets": [
+                "ms.vss-distributed-task.tasks"
+            ],
+            "properties": {
+                "name": "src/Tasks/Create_Run_Experiments"
+            }
+        },
+        {
+            "id": "UploadKubeflowPipeline",
+            "type": "ms.vss-distributed-task.task",
+            "targets": [
+                "ms.vss-distributed-task.tasks"
+            ],
+            "properties": {
+                "name": "src/Tasks/Upload_Pipeline"
+            }
+        },
+        {
+            "id": "KubeFlowExperimentRunAsync",
+            "type": "ms.vss-distributed-task.task",
+            "targets": [
+                "ms.vss-distributed-task.tasks"
+            ],
+            "properties": {
+                "name": "src/Tasks/Create_Run_Experiments_Async"
+            }
+        }
+    ]
+}
