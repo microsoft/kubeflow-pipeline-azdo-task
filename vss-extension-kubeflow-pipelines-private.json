@@ -1,7 +1,7 @@
 {
     "manifestVersion": 1.0,
     "id": "Private-KubeflowTasks",
-    "name": "Kubeflow Pipeline Tasks",
+    "name": "Kubeflow Pipeline Tasks Private",
     "version": "0.0.1",
     "publisher": "CSE-DevOps",
     "description": "Kubeflow pipeline tasks to upload pipeline, create an experiment and trigger pipeline runs both in synchronous and asynchronous way.",
