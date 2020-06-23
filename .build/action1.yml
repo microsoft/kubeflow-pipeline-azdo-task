@@ -1,0 +1,67 @@
+name: 'Kubeflow Upload Pipeline'
+description: 'Upload Kubeflow pipeline'
+inputs:
+  kubeflowEndpoint:  
+    description: 'Kubeflow API endpoint base URL format http://yourURL/.'
+    required: true
+    default: ''
+  bearerToken:  
+    description: 'Do not input raw tokens. Read more on how to handle secrets at https://help.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets.'
+    required: false
+    default: ''
+  pipeline: 
+    description: 'Kubeflow pipeline name.'
+    required: true
+    default: ''
+  useDefaultVersion:  
+    description: 'If checked, will use the version name of the Kubeflow pipeline.'
+    required: true
+    default: ''
+  pipelineVersion:  
+    description: 'Pipeline version name.'
+    required: true
+    default: ''
+  createNewRun:  
+    description: 'Create a new pipeline run from agent job.'
+    required: false
+    default: 'false'
+  runName:  
+    description: 'The name of the new pipeline run.'
+    required: false
+    default: ''
+  pipelineParams:  
+    description: 'Pipeline Parameters in the format: {"name":"VAR_NAME", "value":"VAR_VALUE"}, {"name":"VAR_NAME", "value":"VAR_VALUE"}'
+    required: false
+    default: ''
+  runDescription:  
+    description: 'The description of the new pipeline run.'
+    required: false
+    default: ''
+  waitForRunToFinish:  
+    description: 'If true, this will monitor the runs status.'
+    required: false
+    default: ''
+  experiment:  
+    description: 'Input useExistingExperiment to use an existing experiment or createNewExperiment to create a new experiment.'
+    required: false
+    default: 'useExistingExperiment'
+  experimentName:  
+    description: 'Name a new experiment, or choose an existing experiment.'
+    required: false
+    default: ''
+  experimentDescription:  
+    description: 'Description of a new experiment.'
+    required: false
+    default: ''
+outputs:
+  kf_pipeline_name: 
+    description: 'Name of the pipeline utilized.'
+  kf_pipeline_id:
+    description: 'ID of the pipeline utilized.'
+  kf_pipeline_version_name:
+    description: 'Name of the new pipeline version.'
+  kf_pipeline_version_id:
+    description: 'ID of the new pipeline version.'
+runs:
+  using: 'node12'
+  main: 'index.js'

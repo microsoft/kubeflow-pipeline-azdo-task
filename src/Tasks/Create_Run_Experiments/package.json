@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "mocha ./Tests/RunTests.js ./Tests/ExperimentTests.js --reporter xunit --reporter-option output=RunTestResults.xml"
+    "test": "mocha ./Tests/RunTests.js --reporter xunit --reporter-option output=RunTestResults.xml"
   },
   "repository": {
     "type": "git",

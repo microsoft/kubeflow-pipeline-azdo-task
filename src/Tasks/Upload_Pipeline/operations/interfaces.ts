@@ -24,11 +24,6 @@ export interface IAllPipelineVersion {
 }
 
 export interface IUploadPipeline {
-    endpointUrl: string;
-    getAllPipelinesEndpoint: string;
     pipelineTask: string;
     pipelineFilePath: string;
-    newPipelineName: string | undefined;
-    existingPipelineName: string | undefined;
-    versionName: string | undefined;
 }
