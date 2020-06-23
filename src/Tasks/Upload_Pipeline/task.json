@@ -43,7 +43,7 @@
         },
         {
             "name": "kubeflowPipelineTask",
-            "type": "pickList",
+            "type": "radio",
             "label": "Kubeflow Pipeline Upload Type",
             "group": "UploadPipeline",
             "defaultValue": "",
