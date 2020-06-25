@@ -1,0 +1,68 @@
+# Pipeline for code quality test 
+
+trigger: none
+pr:
+  branches:
+    include:
+    - master
+
+pool:
+  vmImage: "ubuntu-latest"
+
+variables:
+  productionPublisher: "CSE-DevOps"
+  taskExtensionId: "KubeflowTasks"
+  taskExtensionName: "Kubeflow Pipelines Tasks"
+  -group: kubeflow-azdo-custom-task-release
+  
+stages:
+  - stage:
+    displayName: Code Quality
+    jobs:
+      - job:
+        steps:
+          - task: TfxInstaller@2
+            inputs:
+              version: "v0.6.x"
+          - task: Npm@1
+            displayName: "Installing Dependencies required by Kubeflow Upload Task"
+            inputs:
+              command: "install"
+              workingDir: "src/Tasks/Upload_Pipeline"
+          - task: Npm@1
+            displayName: "Installing Dependencies required by Kubeflow Run Task"
+            inputs:
+              command: "install"
+              workingDir: "src/Tasks/Create_Run_Experiments"
+          - task: Bash@3
+            displayName: Compile Javascript
+            inputs:
+              targetType: "inline"
+              script: |
+                cd src/Tasks/Upload_Pipeline
+                tsc
+                cd ..
+                cd Create_Run_Experiments
+                tsc
+          - task: Npm@1
+            displayName: Running Kubeflow Upload Unit Tests
+            inputs:
+              command: "custom"
+              workingDir: "src/Tasks/Upload_Pipeline"
+              customCommand: "test"
+          - task: Npm@1
+            displayName: Running Kubeflow Run Unit Tests
+            inputs:
+              command: "custom"
+              workingDir: "src/Tasks/Create_Run_Experiments"
+              customCommand: "test"
+          - task: PublishTestResults@2
+            displayName: "Publish unit test result"
+            inputs:
+              testResultsFormat: "JUnit"
+              testResultsFiles: |
+                **/UploadTestResults.xml
+                **/RunTestResults.xml
+              mergeTestResults: true
+
+  
