@@ -6,6 +6,8 @@
 
 # Kubeflow Pipeline Tasks
 
+|![image info|200x200](./images/kubeflow.png)  +   ![image info|200x200](./images/azuredevops.png) |
+
  Kubeflow pipeline tasks to upload pipeline, create an experiment and invoke pipeline runs both in synchronous and asynchronous way. These task can be used to achive MLOps with Kubeflow and Azure DevOps.
 
 1. Kubeflow Upload Pipeline
