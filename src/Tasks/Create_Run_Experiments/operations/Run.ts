@@ -34,14 +34,14 @@ export class Run {
     constructor() {
         this.endpointUrl = task.getInput('KubeflowEndpoint', true)!;
         this.runName = task.getInput('runName', false)!;
-        this.pipeline = task.getInput('pipeline', true)!;
-        this.useDefaultVersion = task.getBoolInput('useDefaultVersion', true)!;
+        this.pipeline = task.getInput('pipeline', false)!;
+        this.useDefaultVersion = task.getBoolInput('useDefaultVersion', false)!;
         this.createNewRun = task.getBoolInput('createNewRun', true);
         if (this.useDefaultVersion == true) {
             this.pipelineVersion = this.pipeline;
         }
         else {
-            this.pipelineVersion = task.getInput('pipelineVersion', true)!;
+            this.pipelineVersion = task.getInput('pipelineVersion', false)!;
         }
         this.pipelineParams = task.getInput('pipelineParams', false)!;
         this.description = task.getInput('runDescription', false)!;
@@ -338,7 +338,7 @@ export class Run {
 
     public async getPipelineVersionID(): Promise<string> {
         try {
-            var url = `${this.endpointUrl}${this.getAllVersionsEndpoint}?resource_key.type=PIPELINE&resource_key.id=${this.pipelineID}&filter={"predicates":[{"key":"name","op":"EQUALS","string_value":"${this.pipelineVersion}"}]}`;
+            var url = `${this.endpointUrl}${this.getAllVersionsEndpoint}?page_size=100&resource_key.type=PIPELINE_VERSION&resource_key.id=${this.pipelineID}&filter={"predicates":[{"key":"name","op":"EQUALS","string_value":"${this.pipelineVersion}"}]}`;
             url = encodeURI(url);
             var options: rest.IRequestOptions = { additionalHeaders: { 'authorization': `Bearer ${this.bearerToken}` } };
             var webRequest = await this.restAPIClient.get<IAllPipelineVersion>(url, options)!;
@@ -350,10 +350,10 @@ export class Run {
                             return versions[i].id;
                         }
                     }
-                    console.log('Version not found. Make sure your endpoint and/or bearer token are correct.');
+                    console.log('Pipeline version not found. Make sure your endpoint and/or bearer token are correct.');
                     return 'Not a valid version id.';
                 }
-                console.log('Version not found. Make sure your endpoint and/or bearer token are correct.');
+                console.log('Pipeline version not found. Make sure your endpoint and/or bearer token are correct.');
                 return 'Not a valid version id.';
             }
             console.log('Request did not go through. Make sure your endpoint and/or bearer token are correct.');

@@ -56,25 +56,25 @@
             "type": "string",
             "label": "Pipeline Name",
             "defaultValue": "",
-            "required": true,
-            "helpMarkDown": "Kubeflow pipeline name.",
+            "required": false,
+            "helpMarkDown": "Kubeflow pipeline name. Only required if making a new run.",
             "groupName": "Pipeline"
         },
         {
             "name": "useDefaultVersion",
             "type": "boolean",
             "label": "Use Default Version",
-            "helpMarkDown": "If checked, will use the version name of the Kubeflow pipeline.",
+            "helpMarkDown": "If checked, will use the version name of the Kubeflow pipeline. Only required if making a new run.",
             "groupName": "Pipeline",
-            "required": true
+            "required": false
         },
         {
             "name": "pipelineVersion",
             "type": "string",
             "label": "Pipeline Version Name",
             "defaultValue": "",
-            "required": true,
-            "helpMarkDown": "Pipeline version name.",
+            "required": false,
+            "helpMarkDown": "Pipeline version name. Only required if making a new run.",
             "groupName": "Pipeline"
         },
         {
