@@ -31,6 +31,10 @@
     "icons": {
         "default": "images/Icon.png"
     },
+      "repository": {
+        "type": "git",
+        "uri": "https://github.com/kaizentm/kubeflow-pipeline-azdo-task"
+    },
     "files": [
         {
             "path": "src/Tasks/Create_Run_Experiments"
