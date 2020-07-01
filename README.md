@@ -1,7 +1,7 @@
 | Pipeline     | Status                                                                                                                                                                                                                                                                  |
 | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Code Quality | [![Build Status](https://dev.azure.com/csedevops/Kubeflow%20Integration/_apis/build/status/kubeflow-azdo-customtask/code-quality-check?branchName=master)](https://dev.azure.com/csedevops/Kubeflow%20Integration/_build/latest?definitionId=419&branchName=master)     |
-| Release      | [![Release](https://dev.azure.com/csedevops/Kubeflow%20Integration/_apis/build/status/kubeflow-azdo-customtask/KubeflowTaskBuildAndRelease?branchName=master)](https://dev.azure.com/csedevops/Kubeflow%20Integration/_build/latest?definitionId=293&branchName=master) |
+| Release      | [![Build Status](https://dev.azure.com/csedevops/Kubeflow%20Integration/_apis/build/status/kubeflow-azdo-customtask/kaizentm.kubeflow-pipeline-azdo-task-release?branchName=master)](https://dev.azure.com/csedevops/Kubeflow%20Integration/_build/latest?definitionId=421&branchName=master) |
 
 # Kubeflow Pipeline Azure DevOps Tasks 
 
