@@ -77,15 +77,20 @@ export class Run {
 
     public async validatePipeline() {
         try {
-            var pipelineID = await this.getPipelineID();
-            if (pipelineID != 'Not a valid pipeline id.') {
-                this.pipelineID = pipelineID;
-                task.setVariable("kf_pipeline_id", this.pipelineID);
+            if(this.pipeline == undefined && this.createNewRun == false) {
                 return true;
             }
             else {
-                return false;
-            }
+                var pipelineID = await this.getPipelineID();
+                if (pipelineID != 'Not a valid pipeline id.') {
+                    this.pipelineID = pipelineID;
+                    task.setVariable("kf_pipeline_id", this.pipelineID);
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }  
         }
         catch (error) {
             task.setResult(task.TaskResult.Failed, error.message);
@@ -94,14 +99,19 @@ export class Run {
 
     public async validatePipelineVersion() {
         try {
-            var versionID = await this.getPipelineVersionID();
-            if (versionID != 'Not a valid version id.') {
-                this.pipelineVersionID = versionID;
-                task.setVariable("kf_pipeline_version_id", this.pipelineVersionID);
+            if(this.pipelineVersion == undefined && this.createNewRun == false) {
                 return true;
             }
             else {
-                return false;
+                var versionID = await this.getPipelineVersionID();
+                if (versionID != 'Not a valid version id.') {
+                    this.pipelineVersionID = versionID;
+                    task.setVariable("kf_pipeline_version_id", this.pipelineVersionID);
+                    return true;
+                }
+                else {
+                    return false;
+                }
             }
         }
         catch (error) {
