@@ -4,7 +4,7 @@ import task = require("azure-pipelines-task-lib/task");
 import { IExecSyncResult } from "azure-pipelines-task-lib/toolrunner";
 import * as rest from "typed-rest-client";
 import * as HttpC from "typed-rest-client/HttpClient";
-import{request, OutgoingHttpHeaders} from "http";
+import { request, OutgoingHttpHeaders } from "http";
 import FormData from "form-data";
 import { IAllPipeline } from "./interfaces";
 import { IUploadPipeline, IAllPipelineVersion } from "./interfaces";
@@ -19,6 +19,7 @@ export class UploadPipeline implements IUploadPipeline {
     public pipelineTask: string;
     public pipelineFilePath: string;
     public newPipelineName: string | undefined;
+    public newPipelineDescription: string | undefined;
     public existingPipelineName: string | undefined;
     public versionName: string | undefined;
     public pipelineID: string;
@@ -33,6 +34,7 @@ export class UploadPipeline implements IUploadPipeline {
         this.pipelineTask = task.getInput('kubeflowPipelineTask', true)!;
         this.pipelineFilePath = task.getInput('pipelineFilePath', true)!;
         this.newPipelineName = task.getInput('newPipelineName', false)!;
+        this.newPipelineDescription = task.getInput('newPipelineDescription', false)!;
         this.existingPipelineName = task.getInput('existingPipelineName', false)!;
         this.versionName = task.getInput('versionName', false)!;
         this.pipelineID = '';
@@ -42,22 +44,22 @@ export class UploadPipeline implements IUploadPipeline {
 
     public async validateEndpointUrl() {
         try {
-            var options: rest.IRequestOptions = {additionalHeaders: {'authorization': `Bearer ${this.bearerToken}`}};
+            var options: rest.IRequestOptions = { additionalHeaders: { 'authorization': `Bearer ${this.bearerToken}` } };
             var req = await this.restAPIClient.get(this.endpointUrl, options);
-            if(req.statusCode == 200) {
+            if (req.statusCode == 200) {
                 return true;
             }
             return false;
         }
-        catch(error) {
+        catch (error) {
             task.setResult(task.TaskResult.Failed, error.message);
         }
     }
 
     public async validatePipelineFilePath() {
         try {
-            if(fs.statSync(this.pipelineFilePath).isFile()) {
-                if(this.pipelineFilePath.substring(this.pipelineFilePath.length - 7, this.pipelineFilePath.length) == '.tar.gz') {
+            if (fs.statSync(this.pipelineFilePath).isFile()) {
+                if (this.pipelineFilePath.substring(this.pipelineFilePath.length - 7, this.pipelineFilePath.length) == '.tar.gz') {
                     return true;
                 }
                 else {
@@ -68,7 +70,7 @@ export class UploadPipeline implements IUploadPipeline {
                 return false;
             }
         }
-        catch(error) {
+        catch (error) {
             task.setResult(task.TaskResult.Failed, error.message);
         }
     }
@@ -78,29 +80,29 @@ export class UploadPipeline implements IUploadPipeline {
             const stats = fs.statSync(this.pipelineFilePath);
             const fileSizeInBytes = stats.size;
             // console.log(`Chosen file's size is ${fileSizeInBytes} Bytes.`);
-            if(fileSizeInBytes > this.maxFileSizeBytes) {
+            if (fileSizeInBytes > this.maxFileSizeBytes) {
                 return false
             }
             return true;
         }
-        catch(error) {
+        catch (error) {
             task.setResult(task.TaskResult.Failed, error.message);
         }
     }
 
     public async validateNewPipelineName() {
         try {
-            if(this.newPipelineName == undefined || this.newPipelineName == '') {
+            if (this.newPipelineName == undefined || this.newPipelineName == '') {
                 return false;
             }
             var url = `${this.endpointUrl}${this.getAllPipelinesEndpoint}?filter={"predicates":[{"key":"name","op":"EQUALS","string_value":"${this.newPipelineName}"}]}`;
             url = encodeURI(url);
-            var options: rest.IRequestOptions = {additionalHeaders: {'authorization': `Bearer ${this.bearerToken}`}};
+            var options: rest.IRequestOptions = { additionalHeaders: { 'authorization': `Bearer ${this.bearerToken}` } };
             var webRequest = await this.restAPIClient.get<IAllPipeline>(url, options)!;
-            if(webRequest.result != null) {
-                if(webRequest.result.pipelines != undefined){
-                    for(var PL of webRequest.result.pipelines) {
-                        if(PL.name == this.newPipelineName) {
+            if (webRequest.result != null) {
+                if (webRequest.result.pipelines != undefined) {
+                    for (var PL of webRequest.result.pipelines) {
+                        if (PL.name == this.newPipelineName) {
                             return false;
                         }
                     }
@@ -114,25 +116,25 @@ export class UploadPipeline implements IUploadPipeline {
             else {
                 throw new Error('Request did not go through. Make sure your Url is valid, and that you have the correct bearer token, if needed.');
             }
-        } 
-        catch(error) {
+        }
+        catch (error) {
             task.setResult(task.TaskResult.Failed, error.message);
         }
     }
 
     public async validateExistingPipelineName() {
         try {
-            if(this.existingPipelineName == undefined || this.existingPipelineName == '') {
+            if (this.existingPipelineName == undefined || this.existingPipelineName == '') {
                 return false;
             }
             var url = `${this.endpointUrl}${this.getAllPipelinesEndpoint}?filter={"predicates":[{"key":"name","op":"EQUALS","string_value":"${this.existingPipelineName}"}]}`;
             url = encodeURI(url);
-            var options: rest.IRequestOptions = {additionalHeaders: {'authorization': `Bearer ${this.bearerToken}`}};
+            var options: rest.IRequestOptions = { additionalHeaders: { 'authorization': `Bearer ${this.bearerToken}` } };
             var webRequest = await this.restAPIClient.get<IAllPipeline>(url, options)!;
-            if(webRequest.result != null) {
-                if(webRequest.result.pipelines != undefined){
-                    for(var PL of webRequest.result.pipelines!) {
-                        if(PL.name == this.existingPipelineName) {
+            if (webRequest.result != null) {
+                if (webRequest.result.pipelines != undefined) {
+                    for (var PL of webRequest.result.pipelines!) {
+                        if (PL.name == this.existingPipelineName) {
                             this.pipelineID = PL.id;
                             task.setVariable('kf_pipeline_name', PL.name);
                             task.setVariable('kf_pipeline_id', PL.id);
@@ -148,26 +150,26 @@ export class UploadPipeline implements IUploadPipeline {
             else {
                 throw new Error('Request did not go through. Make sure your Url is valid, and that you have the correct bearer token, if needed.');
             }
-        } 
-        catch(error) {
+        }
+        catch (error) {
             task.setResult(task.TaskResult.Failed, error.message);
         }
     }
 
     public async validateNewVersionName() {
-        try{
-            if(this.versionName == undefined || this.versionName == '') {
+        try {
+            if (this.versionName == undefined || this.versionName == '') {
                 return false;
             }
             var url = `${this.endpointUrl}${this.getAllVersionsEndpoint}?resource_key.type=PIPELINE&resource_key.id=${this.pipelineID}&filter={"predicates":[{"key":"name","op":"EQUALS","string_value":"${this.versionName}"}]}`;
             url = encodeURI(url);
-            var options: rest.IRequestOptions = {additionalHeaders: {'authorization': `Bearer ${this.bearerToken}`}};
+            var options: rest.IRequestOptions = { additionalHeaders: { 'authorization': `Bearer ${this.bearerToken}` } };
             var webRequest = await this.restAPIClient.get<IAllPipelineVersion>(url, options)!;
-            if(webRequest.result != null) {
+            if (webRequest.result != null) {
                 var versions = webRequest.result.versions;
-                if(versions != undefined) {
-                    for(var i = 0; i < versions.length; i++) {
-                        if(versions[i].name == this.versionName) {
+                if (versions != undefined) {
+                    for (var i = 0; i < versions.length; i++) {
+                        if (versions[i].name == this.versionName) {
                             return false;
                         }
                     }
@@ -178,38 +180,38 @@ export class UploadPipeline implements IUploadPipeline {
             }
             return false;
         }
-        catch(error) {
+        catch (error) {
             task.setResult(task.TaskResult.Failed, error.message);
         }
     }
 
     public async runValidations() {
         try {
-            if(!await this.validateEndpointUrl()) {
+            if (!await this.validateEndpointUrl()) {
                 throw new Error('Endpoint Url must be a valid url.');
             }
-            if(!await this.validatePipelineFilePath()) {
+            if (!await this.validatePipelineFilePath()) {
                 throw new Error('File path must be valid and end with the .gz extension.');
             }
-            if(!await this.validatePipelineFileSize()) {
+            if (!await this.validatePipelineFileSize()) {
                 throw new Error('File size cannot exceed 32MB.');
             }
-            if(this.pipelineTask == 'uploadNew') {
-                if(!await this.validateNewPipelineName()) {
+            if (this.pipelineTask == 'uploadNew') {
+                if (!await this.validateNewPipelineName()) {
                     throw new Error('Pipeline name already exists. You must choose an original pipeline name.');
                 }
             }
-            else if(this.pipelineTask == 'uploadNewVersion') {
-                if(!await this.validateExistingPipelineName()) {
+            else if (this.pipelineTask == 'uploadNewVersion') {
+                if (!await this.validateExistingPipelineName()) {
                     throw new Error('Pipeline name does not yet exist. You must enter an existing pipeline name or choose to upload a new pipeline.');
                 }
-                if(!await this.validateNewVersionName()) {
+                if (!await this.validateNewVersionName()) {
                     throw new Error('Version name already exists. You must enter a unique version name.');
                 }
             }
             return true;
         }
-        catch(error) {
+        catch (error) {
             task.setResult(task.TaskResult.Failed, error.message);
         }
     }
@@ -222,17 +224,17 @@ export class UploadPipeline implements IUploadPipeline {
             form.append('uploadfile', uploadFile);
             var reqHost = this.endpointUrl.substring(7, this.endpointUrl.length - 1);
 
-            var reqHeaders = form.getHeaders({'authorization': `Bearer ${this.bearerToken}`});
+            var reqHeaders = form.getHeaders({ 'authorization': `Bearer ${this.bearerToken}` });
             await this.newPLPostRequest(reqHeaders, reqHost, form);
             await this.wait(5000);
             var pipelineID = await this.getPipelineID(this.newPipelineName);
-            if(pipelineID == 'Not a valid pipeline id.') {
+            if (pipelineID == 'Not a valid pipeline id.') {
                 throw new Error('Existing pipeline not found. Check endpoint url. Either choose an new pipeline name or create a new version.');
             }
             console.log(`\nThe new pipeline's ID is: ${pipelineID}`);
             console.log(`New pipeline can be viewed at: ${this.endpointUrl}_/pipeline/#/pipelines/details/${pipelineID}`);
         }
-        catch(error) {
+        catch (error) {
             task.setResult(task.TaskResult.Failed, error.message);
         }
     }
@@ -241,7 +243,7 @@ export class UploadPipeline implements IUploadPipeline {
         var req = request(
             {
                 host: reqHost,
-                path: encodeURI(`/${this.getAllPipelinesEndpoint}/upload?name=${this.newPipelineName}`),
+                path: encodeURI(`/${this.getAllPipelinesEndpoint}/upload?name=${this.newPipelineName}&description=${this.newPipelineDescription}`),
                 method: 'POST',
                 headers: reqHeaders,
             },
@@ -252,7 +254,7 @@ export class UploadPipeline implements IUploadPipeline {
                     })
                     console.log(`Response returned with status code ${response.statusCode}: ${response.statusMessage}`);
                 }
-                catch(error) {
+                catch (error) {
                     task.setResult(task.TaskResult.Failed, `${error.message} Make sure that your endpoint is correct, and that you are using the correct bearer token, if neccessary.`);
                 }
             }
@@ -268,21 +270,21 @@ export class UploadPipeline implements IUploadPipeline {
             form.append('uploadfile', uploadFile);
             var reqHost = this.endpointUrl.substring(7, this.endpointUrl.length - 1);
             var existingPLID = await this.getPipelineID(this.existingPipelineName);
-            if(existingPLID == 'Not a valid pipeline id.') {
+            if (existingPLID == 'Not a valid pipeline id.') {
                 throw new Error('Existing pipeline not found. Check endpoint url. Either choose an existing pipeline or create a new pipeline.');
             }
 
-            var reqHeaders = form.getHeaders({'authorization': `Bearer ${this.bearerToken}`});
+            var reqHeaders = form.getHeaders({ 'authorization': `Bearer ${this.bearerToken}` });
             await this.newVersionPostRequest(reqHeaders, reqHost, form, existingPLID);
             await this.wait(5000);
             var versionID = await this.getPipelineVersionID(existingPLID);
-            if(versionID == 'Not a valid version id.') {
+            if (versionID == 'Not a valid version id.') {
                 throw new Error('Existing version not found. Check endpoint url and bearer token.');
             }
             console.log(`\nThe new pipeline version's ID is: ${versionID}`);
             console.log(`New pipeline version can be viewed at: ${this.endpointUrl}_/pipeline/#/pipelines/details/${this.pipelineID}/version/${versionID}`);
         }
-        catch(error) {
+        catch (error) {
             task.setResult(task.TaskResult.Failed, error.message);
         }
     }
@@ -291,11 +293,11 @@ export class UploadPipeline implements IUploadPipeline {
         try {
             var url = `${this.endpointUrl}${this.getAllPipelinesEndpoint}?filter={"predicates":[{"key":"name","op":"EQUALS","string_value":"${pipelineName}"}]}`;
             url = encodeURI(url);
-            var options: rest.IRequestOptions = {additionalHeaders: {'authorization': `Bearer ${this.bearerToken}`}};
+            var options: rest.IRequestOptions = { additionalHeaders: { 'authorization': `Bearer ${this.bearerToken}` } };
             var webRequest = await this.restAPIClient.get<IAllPipeline>(url, options)!;
-            if(webRequest.result != null) {
+            if (webRequest.result != null) {
                 var pipelines = webRequest.result.pipelines;
-                if(pipelines[0].id != undefined) {
+                if (pipelines[0].id != undefined) {
                     task.setVariable('kf_pipeline_id', pipelines[0].id);
                     return pipelines[0].id;
                 }
@@ -305,7 +307,7 @@ export class UploadPipeline implements IUploadPipeline {
             console.log('Request did not go through. Make sure your endpoint and/or bearer token are correct.');
             return 'Not a valid pipeline id.';
         }
-        catch(error) {
+        catch (error) {
             task.setResult(task.TaskResult.Failed, error.message);
             return 'Not a valid pipeline id.';
         }
@@ -326,7 +328,7 @@ export class UploadPipeline implements IUploadPipeline {
                     })
                     console.log(`Response returned with status code ${response.statusCode}: ${response.statusMessage}`);
                 }
-                catch(error) {
+                catch (error) {
                     task.setResult(task.TaskResult.Failed, `${error.message} Make sure that your endpoint is correct, and that you are using the correct bearer token, if neccessary.`);
                 }
             }
@@ -338,13 +340,13 @@ export class UploadPipeline implements IUploadPipeline {
         try {
             var url = `${this.endpointUrl}${this.getAllVersionsEndpoint}?resource_key.type=PIPELINE&resource_key.id=${pipelineID}&filter={"predicates":[{"key":"name","op":"EQUALS","string_value":"${this.versionName}"}]}`;
             url = encodeURI(url);
-            var options: rest.IRequestOptions = {additionalHeaders: {'authorization': `Bearer ${this.bearerToken}`}};
+            var options: rest.IRequestOptions = { additionalHeaders: { 'authorization': `Bearer ${this.bearerToken}` } };
             var webRequest = await this.restAPIClient.get<IAllPipelineVersion>(url, options)!;
-            if(webRequest.result != null) {
+            if (webRequest.result != null) {
                 var versions = webRequest.result.versions;
-                if(versions != undefined) {
-                    for(var i = 0; i < versions.length; i++) {
-                        if(versions[i].name == this.versionName) {
+                if (versions != undefined) {
+                    for (var i = 0; i < versions.length; i++) {
+                        if (versions[i].name == this.versionName) {
                             task.setVariable('kf_pipeline_version_id', versions[i].id);
                             return versions[i].id;
                         }
@@ -357,7 +359,7 @@ export class UploadPipeline implements IUploadPipeline {
             console.log('Request did not go through. Make sure your endpoint and/or bearer token are correct.');
             return 'Not a valid version id.';
         }
-        catch(error) {
+        catch (error) {
             task.setResult(task.TaskResult.Failed, error.message);
             return 'Not a valid version id.';
         }
@@ -366,6 +368,6 @@ export class UploadPipeline implements IUploadPipeline {
     public async wait(ms: number) {
         await new Promise((resolve) => {
             setTimeout(resolve, ms);
-         });
+        });
     }
 }

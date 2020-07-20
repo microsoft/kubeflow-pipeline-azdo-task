@@ -18,7 +18,7 @@
             "displayName": "Upload Pipeline",
             "isExpanded": true
         }
-      ],
+    ],
     "inputs": [
         {
             "name": "kubeflowEndpoint",
@@ -71,6 +71,16 @@
             "defaultValue": "",
             "required": false,
             "helpMarkDown": "Pipeline name for new upload.",
+            "visibleRule": "kubeflowPipelineTask = uploadNew"
+        },
+        {
+            "name": "newPipelineDescription",
+            "type": "string",
+            "label": "Pipeline Description",
+            "group": "UploadPipeline",
+            "defaultValue": "",
+            "required": false,
+            "helpMarkDown": "Pipeline Description.",
             "visibleRule": "kubeflowPipelineTask = uploadNew"
         },
         {
