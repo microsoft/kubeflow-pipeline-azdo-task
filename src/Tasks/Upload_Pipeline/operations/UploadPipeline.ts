@@ -205,9 +205,6 @@ export class UploadPipeline implements IUploadPipeline {
                 if (!await this.validateExistingPipelineName()) {
                     throw new Error('Pipeline name does not yet exist. You must enter an existing pipeline name or choose to upload a new pipeline.');
                 }
-                if (!await this.validateNewVersionName()) {
-                    throw new Error('Version name already exists. You must enter a unique version name.');
-                }
             }
             return true;
         }
