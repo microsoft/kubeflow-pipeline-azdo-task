@@ -90,7 +90,7 @@
             "type": "multiLine",
             "label": "Headers",
             "required": "false",
-            "defaultValue": "{\"name\":\"azdocallbackinfo\",\"value\":\"{'JobId':'$(system.jobId)','HubName':'$(system.HostType)','TaskInstanceId':'$(system.TaskInstanceId)','PlanId':'$(system.planId)','ProjectId':'$(system.teamProjectId)','PlanUri':'$(system.CollectionUri)','AuthToken':'$(system.AccessToken)'}\"}",
+            "defaultValue": "{\"name\":\"azdocallbackinfo\",\"value\":\"{'JobId':'$(system.jobId)','HubName':'$(system.HostType)','TaskInstanceId':'$(system.TaskInstanceId)','PlanId':'$(system.planId)','ProjectId':'$(system.teamProjectId)','PlanUri':'$(system.CollectionUri)'\"}",
             "visibleRule": "waitForCompletion = tohidethis"
         }
     ],
