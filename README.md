@@ -1,9 +1,9 @@
-| Pipeline     | Status                                                                                                                                                                                                                                                                  |
-| ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Code Quality | [![Build Status](https://dev.azure.com/csedevops/Kubeflow%20Integration/_apis/build/status/kubeflow-azdo-customtask/code-quality-check?branchName=master)](https://dev.azure.com/csedevops/Kubeflow%20Integration/_build/latest?definitionId=419&branchName=master)     |
+| Pipeline     | Status                                                                                                                                                                                                                                                                                        |
+| ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Code Quality | [![Build Status](https://dev.azure.com/csedevops/Kubeflow%20Integration/_apis/build/status/kubeflow-azdo-customtask/code-quality-check?branchName=master)](https://dev.azure.com/csedevops/Kubeflow%20Integration/_build/latest?definitionId=419&branchName=master)                           |
 | Release      | [![Build Status](https://dev.azure.com/csedevops/Kubeflow%20Integration/_apis/build/status/kubeflow-azdo-customtask/kaizentm.kubeflow-pipeline-azdo-task-release?branchName=master)](https://dev.azure.com/csedevops/Kubeflow%20Integration/_build/latest?definitionId=421&branchName=master) |
 
-# Kubeflow Pipeline Azure DevOps Tasks 
+# Kubeflow Pipeline Azure DevOps Tasks
 
 ![image info](./images/kfp_azuredevops.png)
 
@@ -90,9 +90,8 @@ azdocallbackinfo ={
   'TaskInstanceId':'$(system.TaskInstanceId)',
   'PlanId':'$(system.planId)',
   'ProjectId':'$(system.teamProjectId)',
-  'PlanUri':'$(system.CollectionUri)',
-  'AuthToken':'$(system.AccessToken)'}
-```
+  'PlanUri':'$(system.CollectionUri)'}
+  ```
 
 Values from the *"azdocallbackinfo"* parameter will be used for POST data for signaling completion to Azure DevOps
 
