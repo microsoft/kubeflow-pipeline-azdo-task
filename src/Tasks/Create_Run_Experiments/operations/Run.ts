@@ -224,7 +224,7 @@ export class Run {
 
     public async postRequest(reqHost: string, form: string, reqHeaders: OutgoingHttpHeaders) {
         try {
-            task.debug(`Posting run request to ${this.endpointUrl}${this.getAllRunsEndpoint}`)
+            task.debug(`Posting run request to ${this.endpointUrl}${this.getAllRunsEndpoint}`);
             var req = request(
                 {
                     host: reqHost,
