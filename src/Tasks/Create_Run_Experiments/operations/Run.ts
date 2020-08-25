@@ -199,8 +199,7 @@ export class Run {
                 {"key": {"id": "${this.pipelineVersionID}", "type": "PIPELINE_VERSION"}, "relationship": "CREATOR"}]}`;
             }
 
-            var reqHost = this.endpointUrl.substring(7, this.endpointUrl.length - 1);
-
+            var reqHost = new URL(this.endpointUrl).host;
             var reqHeaders = {
                 'authorization': `Bearer ${this.bearerToken}`,
                 'content-type': 'application/json'
@@ -225,6 +224,7 @@ export class Run {
 
     public async postRequest(reqHost: string, form: string, reqHeaders: OutgoingHttpHeaders) {
         try {
+            task.debug(`Posting run request to ${this.endpointUrl}${this.getAllRunsEndpoint}`)
             var req = request(
                 {
                     host: reqHost,
@@ -287,6 +287,7 @@ export class Run {
             var url = `${this.endpointUrl}${this.getAllRunsEndpoint}?resource_key.type=PIPELINE_VERSION&resource_key.id=${this.pipelineVersionID}&filter={"predicates":[{"key":"name","op":"EQUALS","string_value":"${this.runName}"}]}&sort_by=created_at desc`;
             url = encodeURI(url);
             var options: rest.IRequestOptions = { additionalHeaders: { 'authorization': `Bearer ${this.bearerToken}` } };
+            task.debug(`Getting run id from ${url}`);
             var webRequest = await this.restAPIClient.get<IAllRun>(url, options)!;
             if (webRequest.result != null) {
                 if (webRequest.result.runs[0].id != undefined) {
