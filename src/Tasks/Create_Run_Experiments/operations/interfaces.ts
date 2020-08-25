@@ -2,8 +2,7 @@ export interface IExperiment {
     id: string,
     name: string,
     description: string,
-    created_at: Date,
-    // resource_references: [{key: {}, relationship: string}];
+    created_at: Date
 }
 
 export interface IAllExperiment {
