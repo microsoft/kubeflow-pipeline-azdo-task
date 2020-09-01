@@ -28,8 +28,10 @@ export class UploadPipeline implements IUploadPipeline {
 
     constructor() {
         this.endpointUrl = task.getInput('kubeflowEndpoint', true)!;
-        this.getAllPipelinesEndpoint = 'pipeline/apis/v1beta1/pipelines';
-        this.getAllVersionsEndpoint = 'pipeline/apis/v1beta1/pipeline_versions';
+        // strip trailing backslash
+        this.endpointUrl = this.endpointUrl.replace(/\/$/,"");
+        this.getAllPipelinesEndpoint = '/pipeline/apis/v1beta1/pipelines';
+        this.getAllVersionsEndpoint = '/pipeline/apis/v1beta1/pipeline_versions';
         this.bearerToken = task.getInput('bearerToken', false)!;
         this.pipelineTask = task.getInput('kubeflowPipelineTask', true)!;
         this.pipelineFilePath = task.getInput('pipelineFilePath', true)!;
@@ -45,6 +47,7 @@ export class UploadPipeline implements IUploadPipeline {
     public async validateEndpointUrl() {
         try {
             var options: rest.IRequestOptions = { additionalHeaders: { 'authorization': `Bearer ${this.bearerToken}` } };
+            task.debug(`Validating endpoint url ${this.endpointUrl}`);
             var req = await this.restAPIClient.get(this.endpointUrl, options);
             if (req.statusCode == 200) {
                 return true;
@@ -56,7 +59,7 @@ export class UploadPipeline implements IUploadPipeline {
         }
     }
 
-    public async validatePipelineFilePath() {
+    public validatePipelineFilePath() {
         try {
             if (fs.statSync(this.pipelineFilePath).isFile()) {
                 if (this.pipelineFilePath.substring(this.pipelineFilePath.length - 7, this.pipelineFilePath.length) == '.tar.gz') {
@@ -75,11 +78,11 @@ export class UploadPipeline implements IUploadPipeline {
         }
     }
 
-    public async validatePipelineFileSize() {
+    public validatePipelineFileSize() {
         try {
             const stats = fs.statSync(this.pipelineFilePath);
             const fileSizeInBytes = stats.size;
-            // console.log(`Chosen file's size is ${fileSizeInBytes} Bytes.`);
+            task.debug(`file size is ${fileSizeInBytes} bytes`);
             if (fileSizeInBytes > this.maxFileSizeBytes) {
                 return false
             }
@@ -98,11 +101,13 @@ export class UploadPipeline implements IUploadPipeline {
             var url = `${this.endpointUrl}${this.getAllPipelinesEndpoint}?filter={"predicates":[{"key":"name","op":"EQUALS","string_value":"${this.newPipelineName}"}]}`;
             url = encodeURI(url);
             var options: rest.IRequestOptions = { additionalHeaders: { 'authorization': `Bearer ${this.bearerToken}` } };
+            task.debug(`Validating pipeline name from ${url}`);
             var webRequest = await this.restAPIClient.get<IAllPipeline>(url, options)!;
             if (webRequest.result != null) {
                 if (webRequest.result.pipelines != undefined) {
                     for (var PL of webRequest.result.pipelines) {
                         if (PL.name == this.newPipelineName) {
+                            task.error("Pipeline name already exists. You must choose an original pipeline name.");
                             return false;
                         }
                     }
@@ -130,6 +135,7 @@ export class UploadPipeline implements IUploadPipeline {
             var url = `${this.endpointUrl}${this.getAllPipelinesEndpoint}?filter={"predicates":[{"key":"name","op":"EQUALS","string_value":"${this.existingPipelineName}"}]}`;
             url = encodeURI(url);
             var options: rest.IRequestOptions = { additionalHeaders: { 'authorization': `Bearer ${this.bearerToken}` } };
+            task.debug(`Validating pipeline name from ${url}`);
             var webRequest = await this.restAPIClient.get<IAllPipeline>(url, options)!;
             if (webRequest.result != null) {
                 if (webRequest.result.pipelines != undefined) {
@@ -141,6 +147,7 @@ export class UploadPipeline implements IUploadPipeline {
                             return true;
                         }
                     }
+                    task.error("Pipeline name does not exist. To upload a new version of the existing pipeline, please provide existing pipeline name");
                     return false;
                 }
                 else {
@@ -156,54 +163,25 @@ export class UploadPipeline implements IUploadPipeline {
         }
     }
 
-    public async validateNewVersionName() {
-        try {
-            if (this.versionName == undefined || this.versionName == '') {
-                return false;
-            }
-            var url = `${this.endpointUrl}${this.getAllVersionsEndpoint}?resource_key.type=PIPELINE&resource_key.id=${this.pipelineID}&filter={"predicates":[{"key":"name","op":"EQUALS","string_value":"${this.versionName}"}]}`;
-            url = encodeURI(url);
-            var options: rest.IRequestOptions = { additionalHeaders: { 'authorization': `Bearer ${this.bearerToken}` } };
-            var webRequest = await this.restAPIClient.get<IAllPipelineVersion>(url, options)!;
-            if (webRequest.result != null) {
-                var versions = webRequest.result.versions;
-                if (versions != undefined) {
-                    for (var i = 0; i < versions.length; i++) {
-                        if (versions[i].name == this.versionName) {
-                            return false;
-                        }
-                    }
-                    task.setVariable('kf_pipeline_version_name', this.versionName);
-                    return true;
-                }
-                return false;
-            }
-            return false;
-        }
-        catch (error) {
-            task.setResult(task.TaskResult.Failed, error.message);
-        }
-    }
-
     public async runValidations() {
         try {
             if (!await this.validateEndpointUrl()) {
                 throw new Error('Endpoint Url must be a valid url.');
             }
-            if (!await this.validatePipelineFilePath()) {
-                throw new Error('File path must be valid and end with the .gz extension.');
+            if (!this.validatePipelineFilePath()) {
+                throw new Error('File path must be valid and end with the .tar.gz extension.');
             }
-            if (!await this.validatePipelineFileSize()) {
+            if (!this.validatePipelineFileSize()) {
                 throw new Error('File size cannot exceed 32MB.');
             }
             if (this.pipelineTask == 'uploadNew') {
                 if (!await this.validateNewPipelineName()) {
-                    throw new Error('Pipeline name already exists. You must choose an original pipeline name.');
+                    throw new Error('Error validating pipeline name.');
                 }
             }
             else if (this.pipelineTask == 'uploadNewVersion') {
                 if (!await this.validateExistingPipelineName()) {
-                    throw new Error('Pipeline name does not yet exist. You must enter an existing pipeline name or choose to upload a new pipeline.');
+                    throw new Error('Error validating existing pipeline name.');
                 }
             }
             return true;
@@ -219,7 +197,7 @@ export class UploadPipeline implements IUploadPipeline {
             var uploadFile = fs.createReadStream(this.pipelineFilePath);
             var form: FormData = new FormData();
             form.append('uploadfile', uploadFile);
-            var reqHost = this.endpointUrl.substring(7, this.endpointUrl.length - 1);
+            var reqHost = new URL(this.endpointUrl).host;
 
             var reqHeaders = form.getHeaders({ 'authorization': `Bearer ${this.bearerToken}` });
             await this.newPLPostRequest(reqHeaders, reqHost, form);
@@ -237,10 +215,12 @@ export class UploadPipeline implements IUploadPipeline {
     }
 
     public async newPLPostRequest(reqHeaders: OutgoingHttpHeaders, reqHost: string, form: FormData) {
+        var path = encodeURI(`${this.getAllPipelinesEndpoint}/upload?name=${this.newPipelineName}&description=${this.newPipelineDescription}`)
+        task.debug(`Posting pipeline request to ${this.endpointUrl}${path}`);
         var req = request(
             {
                 host: reqHost,
-                path: encodeURI(`/${this.getAllPipelinesEndpoint}/upload?name=${this.newPipelineName}&description=${this.newPipelineDescription}`),
+                path: path,
                 method: 'POST',
                 headers: reqHeaders,
             },
@@ -265,7 +245,7 @@ export class UploadPipeline implements IUploadPipeline {
             var uploadFile = fs.createReadStream(this.pipelineFilePath);
             var form: FormData = new FormData();
             form.append('uploadfile', uploadFile);
-            var reqHost = this.endpointUrl.substring(7, this.endpointUrl.length - 1);
+            var reqHost = new URL(this.endpointUrl).host;
             var existingPLID = await this.getPipelineID(this.existingPipelineName);
             if (existingPLID == 'Not a valid pipeline id.') {
                 throw new Error('Existing pipeline not found. Check endpoint url. Either choose an existing pipeline or create a new pipeline.');
@@ -311,10 +291,12 @@ export class UploadPipeline implements IUploadPipeline {
     }
 
     public async newVersionPostRequest(reqHeaders: OutgoingHttpHeaders, reqHost: string, form: FormData, existingPLID: string) {
+        var path = encodeURI(`${this.getAllPipelinesEndpoint}/upload_version?name=${this.versionName}&pipelineid=${existingPLID}`);
+        task.debug(`Posting pipeline version request to ${this.endpointUrl}${path}`);
         var req = request(
             {
                 host: reqHost,
-                path: encodeURI(`/${this.getAllPipelinesEndpoint}/upload_version?name=${this.versionName}&pipelineid=${existingPLID}`),
+                path: path,
                 method: 'POST',
                 headers: reqHeaders,
             },

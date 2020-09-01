@@ -1,10 +1,8 @@
 import path = require("path");
 import fs = require("fs");
 import task = require("azure-pipelines-task-lib/task");
-import { IExecSyncResult } from "azure-pipelines-task-lib/toolrunner";
 import * as rest from "typed-rest-client";
 import { request, OutgoingHttpHeaders } from "http";
-import FormData from "form-data";
 import { IAllExperiment } from "./interfaces"
 
 export class Experiment {
@@ -17,9 +15,11 @@ export class Experiment {
 
     constructor() {
         this.endpointUrl = task.getInput('kubeflowEndpoint', true)!;
+        // strip trailing backslash
+        this.endpointUrl = this.endpointUrl.replace(/\/$/,"");
         this.name = task.getInput('experimentName', true)!;
         this.description = task.getInput('experimentDescription', false)!;
-        this.getAllExperimentsEndpoint = 'pipeline/apis/v1beta1/experiments';
+        this.getAllExperimentsEndpoint = '/pipeline/apis/v1beta1/experiments';
         this.restAPIClient = new rest.RestClient('agent');
         this.bearerToken = task.getInput('bearerToken', false)!;
     }
@@ -27,6 +27,7 @@ export class Experiment {
     public async validateEndpointUrl() {
         try {
             var options: rest.IRequestOptions = { additionalHeaders: { 'authorization': `Bearer ${this.bearerToken}` } };
+            task.debug(`Validating endpoint url ${this.endpointUrl}`);
             var req = await this.restAPIClient.get(this.endpointUrl, options);
             if (req.statusCode == 200) {
                 return true;
@@ -42,6 +43,7 @@ export class Experiment {
         try {
             var url = `${this.endpointUrl}${this.getAllExperimentsEndpoint}`;
             var options: rest.IRequestOptions = { additionalHeaders: { 'authorization': `Bearer ${this.bearerToken}` } };
+            task.debug(`Loading experiment names from ${url}`);
             var webRequest = await this.restAPIClient.get<IAllExperiment>(url, options)!;
             if (webRequest.result != null) {
                 if (webRequest.result.experiments != undefined) {
@@ -89,8 +91,7 @@ export class Experiment {
             else {
                 var form: string = JSON.stringify({ "name": this.name, "description": this.description });
             }
-            var reqHost = this.endpointUrl.substring(7, this.endpointUrl.length - 1);
-
+            var reqHost = new URL(this.endpointUrl).host;
             var reqHeaders = {
                 'authorization': `Bearer ${this.bearerToken}`,
                 'content-type': 'application/json'
@@ -103,10 +104,11 @@ export class Experiment {
     }
 
     public async postRequest(reqHost: string, form: string, reqHeaders: OutgoingHttpHeaders) {
+        task.debug(`Posting experiment request to ${this.endpointUrl}${this.getAllExperimentsEndpoint}`)
         var req = request(
             {
                 host: reqHost,
-                path: `/${this.getAllExperimentsEndpoint}`,
+                path: `${this.getAllExperimentsEndpoint}`,
                 method: 'POST',
                 headers: reqHeaders,
             },
