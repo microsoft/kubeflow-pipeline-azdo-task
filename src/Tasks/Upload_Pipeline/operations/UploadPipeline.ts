@@ -107,6 +107,7 @@ export class UploadPipeline implements IUploadPipeline {
                 if (webRequest.result.pipelines != undefined) {
                     for (var PL of webRequest.result.pipelines) {
                         if (PL.name == this.newPipelineName) {
+                            task.error("Pipeline name already exists. You must choose an original pipeline name.");
                             return false;
                         }
                     }
@@ -146,6 +147,7 @@ export class UploadPipeline implements IUploadPipeline {
                             return true;
                         }
                     }
+                    task.error("Pipeline name does not exist. To upload a new version of the existing pipeline, please provide existing pipeline name");
                     return false;
                 }
                 else {
