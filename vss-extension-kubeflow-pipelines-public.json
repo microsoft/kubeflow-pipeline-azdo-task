@@ -33,7 +33,7 @@
     },
       "repository": {
         "type": "git",
-        "uri": "https://github.com/kaizentm/kubeflow-pipeline-azdo-task"
+        "uri": "https://github.com/microsoft/kubeflow-pipeline-azdo-task"
     },
     "files": [
         {
