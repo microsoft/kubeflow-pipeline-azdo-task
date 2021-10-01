@@ -102,4 +102,4 @@ Values from the *"azdocallbackinfo"* parameter will be used for POST data for si
  { "name": "TaskCompleted", "taskId": "taskInstanceId", "jobId": "jobId", "result": "succeeded" }
  ```
 
- Refer [sample Kubeflow pipeline](https://github.com/kaizentm/kubemlops/blob/master/code/pipelineazdo.py) implementing this call back with exit handler.
+ Refer [sample Kubeflow pipeline](https://github.com/microsoft/kubemlops/blob/master/code/pipelineazdo.py) implementing this call back with exit handler.
